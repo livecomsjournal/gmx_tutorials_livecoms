@@ -3,6 +3,7 @@
 %%% ADAPTED FROM ELIFE ARTICLE TEMPLATE (8/10/2017)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PREAMBLE
+%\documentclass[9pt,tutorial,pubversion]{livecoms}
 \documentclass[9pt,tutorial,pubversion]{livecoms}
 % Use the 'onehalfspacing' option for 1.5 line spacing
 % Use the 'doublespacing' option for 2.0 line spacing
@@ -35,7 +36,7 @@
 %%% IMPORTANT USER CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\versionnumber}{1.0}  % you should update the minor version number in preprints and major version number of submissions.
+\newcommand{\versionnumber}{1.1}  % you should update the minor version number in preprints and major version number of submissions.
 \newcommand{\githubrepository}{\url{https://github.com/jalemkul/gmx_tutorials_livecoms}}  %this should be the main github repository for this article
 
 \newcommand{\urlstring}{http://www.mdtutorials.com/gmx}
@@ -53,7 +54,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ARTICLE SETUP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{From Proteins to Perturbed Hamiltonians: A Suite of Tutorials for the GROMACS-2018 Molecular Simulation Package [Article v\versionnumber]}
+\title{From Proteins to Perturbed Hamiltonians: A Suite of Tutorials for the GROMACS-2025 Molecular Simulation Package [Article v\versionnumber]}
 
 \author[1*]{Justin A. Lemkul}
 % \author[1,2\authfn{1}\authfn{3}]{Firstname Middlename Familyname}
@@ -148,7 +149,32 @@ After completing Tutorial 2, "KALP\textsubscript{15} in DPPC," the user should b
 	\item Perform lipid-specific analysis using custom index groups
 \end{enumerate}
 
-After completing Tutorial 3, "Umbrella Sampling," the user should be able to perform simulations under the influence of a biasing potential. Specific learning objectives include:
+After completing Tutorial 3, "Protein-Ligand Complex," the user should be able to construct a solvated protein system including a ligand that needs to be parametrized. Specific learning objectives include:
+\begin{enumerate}
+	\item Produce a ligand topology outside of GROMACS and incorporate it into a system topology
+	\item Determine how to verify if a ligand topology is suitable for further simulation
+	\item Perform analysis of interactions between a protein and a ligand
+\end{enumerate}
+
+After completing Tutorial 4, "van der Waals Transformation," the user should be able to carry out a series of simulations for the alchemical transformation of a small molecule in water. Specific learning objectives include:
+\begin{enumerate}
+	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
+	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
+\end{enumerate}
+
+After completing Tutorial 5, "Ethanol Hydration Free Energy,'" the user should be able to...
+\begin{enumerate}
+	\item
+	\item
+\end{enumerate}
+
+After completing Tutorial 6, "Protein-Ligand Binding Free Energy," the user should be able to...
+\begin{enumerate}
+	\item
+	\item
+\end{enumerate}
+
+After completing Tutorial 7, "Umbrella Sampling," the user should be able to perform simulations under the influence of a biasing potential. Specific learning objectives include:
 \begin{enumerate}
 	\item Apply \texttt{.mdp} keywords that invoke the pull code to add a simple, one-dimensional biasing potential to selected atoms in a system
 	\item Define what is meant by a "reaction coordinate" and how to construct a suitable one
@@ -156,26 +182,13 @@ After completing Tutorial 3, "Umbrella Sampling," the user should be able to per
 	\item Compute a potential of mean force profile
 \end{enumerate}
 
-After completing Tutorial 4, "Biphasic Systems," the user should be able to construct heterogeneous systems of two different liquids. Specific learning objectives include:
+After completing Tutorial 8, "Biphasic Systems," the user should be able to construct heterogeneous systems of two different liquids. Specific learning objectives include:
 \begin{enumerate}
 	\item Build a simulation system containing a liquid that is not water
 	\item Manipulate the relative positioning of a box within a larger volume
 \end{enumerate}
 
-After completing Tutorial 5, "Protein-Ligand Complex," the user should be able to construct a solvated protein system including a ligand that needs to be parametrized. Specific learning objectives include:
-\begin{enumerate}
-	\item Produce a ligand topology outside of GROMACS and incorporate it into a system topology
-	\item Determine how to verify if a ligand topology is suitable for further simulation
-	\item Perform analysis of interactions between a protein and a ligand
-\end{enumerate}
-
-After completing Tutorial 6, "Free Energy of Solvation," the user should be able to carry out a series of simulations for the alchemical transformation of a small molecule in water. Specific learning objectives include:
-\begin{enumerate}
-	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
-	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
-\end{enumerate}
-
-After completing Tutorial 7, "Virtual Sites," the user should be able to understand what virtual sites are and how they are used in specific cases. Specific learning objectives include:
+After completing Tutorial 9, "Virtual Sites," the user should be able to understand what virtual sites are and how they are used in specific cases. Specific learning objectives include:
 \begin{enumerate}
 	\item Define a virtual site and its position relative to other atoms
 	\item Construct a system of a linear molecule with virtual sites
@@ -220,7 +233,7 @@ Every GROMACS program has a set of default options and file names that it assume
 
 Each tutorial is available at \tutorialhomeurl, and the link to each specific tutorial is given within each of the following sections. Command-line syntax and input files are available at each tutorial's URL. This article will describe the practical considerations and theoretical basis for the approaches taken here.
 
-%%%%%%%%% TUTORIAL 1 %%%%%%%%%
+%%%%%%%%% FUNDAMENTALS: LYSOZYME %%%%%%%%%
 \subsection{Tutorial 1: Lysozyme in Water} \label{lyso}
 
 \begin{figure}[H]
@@ -247,15 +260,16 @@ The \texttt{pdb2gmx} program is best suited to linear biopolymers, with limited 
 
 Many force fields are included in GROMACS, including several variants of the AMBER force field~\cite{Cornell1994,Kollman1996,Wang2000,Garcia2002,Duan2003,Hornak2006,LindorffLarsen2010}, CHARMM22/CMAP for proteins~\cite{MacKerell1998,MacKerell2004} and CHARMM27 for nucleic acids~\cite{Foloppe2000,MacKerell2000}, several GROMOS96 parameter sets~\cite{Daura1998,Schuler2001,Oostenbrink2004,Schmid2011}, and OPLS-AA~\cite{Kaminski2001}. Also note that the CHARMM36 force field~\cite{Best2012,Hart2012,Denning2011,Klauda2010,Huang2016} is available in GROMACS format from \url{http://mackerell.umaryland.edu/charmm_ff.shtml#gromacs}.
 
-Beyond the consideration of whether or not a force field has parameters for a given chemical species, it is important to realize that the choice of force field is perhaps the single most critical aspect to beginning a new simulation project. No existing force field perfectly treats all species, and each available force field has pros and cons for different species. It is incumbent upon the user to make an informed, justifiable choice based on literature reading and evaluation of the force field parametrization protocol to understand to which purposes a given force field is best suited. There is no catch-all answer or universally "best" force field.
+Beyond the consideration of whether or not a force field has parameters for a given chemical species, it is important to realize that the choice of force field is perhaps the single most critical aspect to beginning a new simulation project. No existing force field perfectly treats all species, and each available force field has pros and cons for different species. It is incumbent upon the user to make an informed, justifiable choice based on literature reading and evaluation of the force field parametrization protocol to understand to which purposes a given force field is best suited. There is no catch-all answer or universally "best" force field. For this tutorial, we will be using CHARMM36m~\cite{Huang2016}, a widely used all-atom force field. Download the force field from the MacKerell lab website (\url{https://mackerell.umaryland.edu/charmm_ff.shtml#gromacs}); for this tutorial we will use the files contained in the ``charmm36-feb2026\_cgenff-5.0.ff.tgz'' tarball. Unarchive the tarball and either leave the resulting ``charmm36-feb2026\_cgenff-5.0.ff'' directory in the working directory or move it to \texttt{\$GMXLIB}. The first prompt is for the user to select the force field that will be applied to the system. 
 
-Once a starting structure has been chosen and the choice of force field decided upon, run \texttt{pdb2gmx} to create the topology:
+Once a starting structure has been chosen and the force field decided upon, run \texttt{pdb2gmx} to create the topology:
 
 \begin{lstlisting}
-$ gmx pdb2gmx -f 1AKI_clean.pdb -o 1AKI_processed.gro -water spce
+$ gmx pdb2gmx -f 1AKI_clean.pdb -o 1AKI_processed.gro -water tip3p
 \end{lstlisting}
 %
-The first prompt is for the user to select the force field that will be applied to the system. For this tutorial, choose option 15 for OPLS-AA, a widely used all-atom force field. An all-atom force field is used here for simplicity rather than introducing concepts of implicit hydrogen atoms as in united-atom force fields or coarse-grain representations. In principle, many of the force fields provided with GROMACS would be adequate for the purposes of this tutorial. The next choice the user must make is the water model that is to be used. In the tutorial, the \texttt{-water} argument is invoked from \texttt{pdb2gmx} to select the SPC/E water mode~\cite{Berendsen1987}; if this option is not given on the command line, the user is prompted for an interactive choice. The water model is another important consideration, though one over which the user has less freedom. Each force field was parametrized for use with a specific water model. Therefore, the user is not entirely free to choose whichever model happens to be available without due consideration. GROMACS provides a suggested water model for each force field; unless there is good evidence to choose another model, the user should follow this recommendation for greatest accuracy. However, some studies have shown that different biomolecular force fields may be accurately combined with other water models, as is the case in this tutorial. The OPLS-AA force field was originally parametrized for use with the TIP3P water model~\cite{Jorgensen1983}, but it was subsequently shown that the combination of OPLS-AA with SPC/E yielded more accurate hydration free energies for protein side chains~\cite{Hess2006}, suggesting this combination is a sufficiently accurate and self-consistent model for simulating proteins. In the absence of any sufficiently strong justification or precedent, the user should always choose the recommended water model listed by \texttt{pdb2gmx}.
+
+An all-atom force field is used here for simplicity rather than introducing concepts of implicit hydrogen atoms as in united-atom force fields or coarse-grain representations. In principle, many of the force fields provided with GROMACS would be adequate for the purposes of this tutorial. The next choice the user must make is the water model that is to be used. In the tutorial, the \texttt{-water} argument is invoked from \texttt{pdb2gmx} to select the SPC/E water mode~\cite{Berendsen1987}; if this option is not given on the command line, the user is prompted for an interactive choice. The water model is another important consideration, though one over which the user has less freedom. Each force field was parametrized for use with a specific water model. Therefore, the user is not entirely free to choose whichever model happens to be available without due consideration. GROMACS provides a suggested water model for each force field; unless there is good evidence to choose another model, the user should follow this recommendation for greatest accuracy. However, some studies have shown that different biomolecular force fields may be accurately combined with other water models, as is the case in this tutorial. The CHARMM36 force field was originally parametrized for use with the TIP3P water model~\cite{Jorgensen1983}, with subsequent modifications by other investigations; these modifications have resulted in the so-called ``CHARMM-modified TIP3P,'' which is the default water model invoked with \texttt{-water tip3p}. In the absence of any sufficiently strong justification or precedent, the user should always choose the recommended water model listed by \texttt{pdb2gmx}.
 
 Often, new users are confused at having to choose a water model at this stage, particularly in the case that their provided coordinate file only contains a biomolecule such as a protein. The water model selection is planning for the subsequent steps, in which this solute is hydrated and a force field choice should be made ahead of time. By selecting the water model at this first step, \texttt{pdb2gmx} can write a complete topology that will describe all the species that will be included in the system being built.
 
@@ -276,7 +290,7 @@ In constructing a simulation system (the central image) for use with PBC, an imp
 The GROMACS program that is used for defining the box around the solute, and the subsequent positioning of the solute therein, is called \texttt{editconf}, for "edit configuration." This program allows the user to manipulate the coordinates of the solute via rotations and translations, so that molecules can be specifically positioned and oriented within a box. The most conventional usage for a system like this one is to center the solute with a box that has a defined buffer according to the minimum image convention (see below). For the lysozyme system in this tutorial, issue the following \texttt{editconf} command:
 
 \begin{lstlisting}
-$ gmx editconf -f 1AKI_processed.gro -o 1AKI_newbox.gro -c -d 1.0 -bt cubic
+$ gmx editconf -f 1AKI_processed.gro -o 1AKI_newbox.gro -c -d 1.2 -bt cubic
 \end{lstlisting}
 %
 Doing so will center the protein (option \texttt{-c}, which is boolean and therefore takes no additional argument) in a cubic box (\texttt{-bt cubic}), with a minimum solute-box distance of 1.0 nm (\texttt{-d 1.0}). Note that GROMACS uses SI notation for all base units. New users often face issues in specifying distances and cutoffs if they are more familiar with software that uses \AA. There are many different box shapes that can be used, specifically those that have a small volume but still satisfy the same periodic distance, but for simplicity this tutorial will only address a cubic system. Interested readers are referred to the GROMACS manual for discussion on alternate box shapes. After running \texttt{editconf}, the protein is now centered within a cubic box (Figure~\ref{lyso_box_fig}).
@@ -358,16 +372,18 @@ These instructions tell the GROMACS program \texttt{mdrun} (discussed below) to 
 The remainder of the \texttt{.mdp} file contains instructions for how to compute nonbonded interactions:
 
 \begin{lstlisting}
-nstlist       = 1
-cutoff-scheme = Verlet
-ns_type       = grid
-coulombtype   = PME
-rcoulomb      = 1.0
-rvdw          = 1.0
-pbc           = xyz
+nstlist         = 1
+cutoff-scheme   = Verlet
+ns_type         = grid
+coulombtype     = PME
+rcoulomb        = 1.2
+rvdw            = 1.2
+rvdw-switch     = 1.0
+vdw-modifier    = force-switch
+pbc             = xyz
 \end{lstlisting}
 %
-The value of \texttt{nstlist} controls how many steps (minimization or MD integration) elapse between updating the neighbor list for determining which atoms contribute to the short-range forces. In MD simulations, this value is larger because atoms exchange from the neighbor list in diffusion-limited time, but for energy minimization, it needs to be set to 1 because the configuration may change considerably between each step. The \texttt{cutoff-scheme = Verlet} setting uses a buffered neighbor list, that is, atoms outside the longest cutoff are still tracked to improve energy conservation. Neighbor searching is done by checking atoms in neighboring grids (\texttt{ns\_type = grid}) rather than checking every possible atom (\texttt{ns\_type = simple}). All short-range nonbonded interactions (electrostatics and van der Waals) are truncated at 1.0 nm (\texttt{rcoulomb = 1.0} and \texttt{rvdw= 1.0}), and periodic boundary conditions are applied in all three dimensions (\texttt{pbc = xyz}). The PME method is used to calculate long-range electrostatic forces.
+The value of \texttt{nstlist} controls how many steps (minimization or MD integration) elapse between updating the neighbor list for determining which atoms contribute to the short-range forces. In MD simulations, this value is larger because atoms exchange from the neighbor list in diffusion-limited time, but for energy minimization, it needs to be set to 1 because the configuration may change considerably between each step. The \texttt{cutoff-scheme = Verlet} setting uses a buffered neighbor list, that is, atoms outside the longest cutoff are still tracked to improve energy conservation. Neighbor searching is done by checking atoms in neighboring grids (\texttt{ns\_type = grid}) rather than checking every possible atom (\texttt{ns\_type = simple}). All short-range nonbonded interactions (electrostatics and van der Waals) are truncated at 1.2 nm (\texttt{rcoulomb = 1.2}) and \texttt{rvdw= 1.2}, with van der Waals interactions treated by switching forces smoothly between \texttt{rvdw-switch} and \texttt{rvdw}. Periodic boundary conditions are applied in all three dimensions (\texttt{pbc = xyz}). The PME method is used to calculate long-range electrostatic forces.
 
 Note that in \texttt{.mdp} files, there is no difference between a hyphen (-) and underscore (\_); hence in the above example, \texttt{ns-type} and \texttt{ns\_type} would be equivalent, as would \texttt{cutoff-scheme} and \texttt{cutoff\_scheme}.
 
@@ -390,10 +406,10 @@ The \texttt{-v} option invokes "verbose" mode, in which an estimate of time rema
 When \texttt{mdrun} is done, the user will see something similar to the following:
 
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-Steepest Descents converged to Fmax < 1000 in 726 steps
-Potential Energy  = -5.8448769e+05
-Maximum force     =  9.6957593e+02 on atom 736
-Norm of force     =  2.3290928e+01
+Steepest Descents converged to Fmax < 1000 in 566 steps
+Potential Energy  = -6.2751356e+05
+Maximum force     =  9.8003864e+02 on atom 567
+Norm of force     =  2.3013127e+01
 \end{lstlisting}
 
 For a system such as this, it is expected that the final potential energy will be a negative value, on the order of 10\textsuperscript{5} - 10\textsuperscript{6} kJ mol\textsuperscript{-1}. Potential energy is an extrinsic quantity, so larger systems will have larger magnitudes. For a solvated protein, the value will be negative, as favorable electrostatic interactions between water molecules dominate the potential energy terms. Smaller systems may even have positive potential energy, arising from the fact that in such cases, the intramolecular bonded terms have a larger magnitude than nonbonded terms. Bonded components of the potential energy function have positive values, by definition. So for small systems, these may prevail and the final, potential energy is positive. Such an outcome is not necessarily an indication that anything is wrong. It would, however, be unusual for a fully solvated protein system such as this one to have a positive potential energy.
@@ -408,7 +424,7 @@ By default, GROMACS analysis programs write output formatted for use with the Xm
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_em_potential}
+\includegraphics[width=\columnwidth]{plot_lyso_em_potential}
 \caption{Potential energy of the solvated lysozyme system as a function of energy minimization step.}
 \label{lyso_em_fig}
 \end{figure}
@@ -427,7 +443,7 @@ To initialize dynamics, velocities are generated by \texttt{grompp} and written 
 
 \begin{lstlisting}
 gen_vel                 = yes
-gen_temp                = 300
+gen_temp                = 298
 gen_seed                = -1
 \end{lstlisting}
 
@@ -452,13 +468,13 @@ The above lines specify that this process is an MD simulation, and the \texttt{m
 Output is specified in the next section of \texttt{nvt.mdp}:
 
 \begin{lstlisting}
-nstxout                 = 500
-nstvout                 = 500
-nstenergy               = 500
-nstlog                  = 500
+nstxout                 = 2500
+nstvout                 = 2500
+nstenergy               = 2500
+nstlog                  = 2500
 \end{lstlisting}
 %
-The \texttt{nstxout} and \texttt{nstvout} settings control the interval of time steps between writing coordinates (x) and velocities (v) to the trajectory (\texttt{.trr}) file. With these settings, coordinates and velocities are saved every 1 ps. Similarly, energy terms are written to the \texttt{.edr} file (\texttt{nstenergy}) and \texttt{.log} file (\texttt{nstlog}) at the same interval.
+The \texttt{nstxout} and \texttt{nstvout} settings control the interval of time steps between writing coordinates (x) and velocities (v) to the trajectory (\texttt{.trr}) file. With these settings, coordinates and velocities are saved every 5 ps. Similarly, energy terms are written to the \texttt{.edr} file (\texttt{nstenergy}) and \texttt{.log} file (\texttt{nstlog}) at the same interval.
 
 Bond constraints are applied to allow for the 2-fs integration time step specified above. The value of $\delta$t is limited by the fastest vibrational modes in the system, which are typically bonds to hydrogen atoms. As these bonds will rarely exist in excited states, it is reasonable to model them as rigid, replacing the harmonic oscillator term with a holonomic constraint. Doing so allows the value of $\delta$t to be increased from roughly 0.5 fs up to 2 fs for typical dynamics runs. In the \texttt{.mdp} file, the relevant settings are:
 
@@ -475,13 +491,13 @@ The \texttt{continuation} keyword tells \texttt{mdrun} that the coordinates are 
 The next relevant section is related to nonbonded interactions, which were described above in section~\ref{lyso_em}. After the nonbonded settings are the keywords related to temperature control:
 
 \begin{lstlisting}
-tcoupl              = V-rescale
-tc-grps             = Protein Non-Protein
-tau_t               = 0.1     0.1
-ref_t               = 300     300
+tcoupl                  = V-rescale
+tc-grps                 = System
+tau_t                   = 1.0
+ref_t                   = 298
 \end{lstlisting}
 %
-The \texttt{tcoupl} keyword specifies the algorithm that is used for temperature coupling, also known as the thermostat. In this example, the velocity rescaling method of Bussi et al. is applied~\cite{Bussi2007}. Another thermostat commonly applied during equilibration is the weak coupling method of Berendsen et al.~\cite{Berendsen1984} (specified with \texttt{tcoupl = berendsen} in the \texttt{.mdp} file). The Berendsen weak coupling method has fallen out of favor, as it has been demonstrated that it does not sample a correct canonical velocity distribution~\cite{Bussi2007}. The Bussi velocity rescaling method, however, does sample a correct velocity distribution, and has the same advantages as the Berendsen method in that it quickly relaxes the system to the target temperature, making it practical and efficient for use in both equilibration and production MD simulations. The \texttt{tc-grps} keyword specifies which groups of atoms are coupled to the specified thermostat. All atoms should be coupled, but they can be separated into different groups. Strictly speaking, any separation of atoms into different groups violates the Equipartition Theorem, in that thermal energy can flow into and out of the thermal reservoir (thermostat) independently between the different groups, rather than being exchanged between the atoms in the system. The practice of coupling solute and solvent atoms separately arises from the "hot solvent/cold solute" problem in MD simulations~\cite{Lingenheil2008}, in which the solvent heats while the solute cools, due to a host of factors related to approximations made in MD integration. Here, the protein and all other non-protein atoms (water and ions) are coupled to separate thermostats at 300 K, with a coupling time ($\tau_{T}$) of 0.1 ps, which reflects rather tight regulation, which is appropriate for equilibration.
+The \texttt{tcoupl} keyword specifies the algorithm that is used for temperature coupling, also known as the thermostat. In this example, the velocity rescaling method of Bussi et al. is applied~\cite{Bussi2007}. Another thermostat commonly applied during equilibration is the weak coupling method of Berendsen et al.~\cite{Berendsen1984} (specified with \texttt{tcoupl = berendsen} in the \texttt{.mdp} file). The Berendsen weak coupling method has fallen out of favor, as it has been demonstrated that it does not sample a correct canonical velocity distribution~\cite{Bussi2007}. The Bussi velocity rescaling method, however, does sample a correct velocity distribution, and has the same advantages as the Berendsen method in that it quickly relaxes the system to the target temperature, making it practical and efficient for use in both equilibration and production MD simulations. The \texttt{tc-grps} keyword specifies which groups of atoms are coupled to the specified thermostat. All atoms should be coupled, but they can be separated into different groups. Strictly speaking, any separation of atoms into different groups violates the Equipartition Theorem, in that thermal energy can flow into and out of the thermal reservoir (thermostat) independently between the different groups, rather than being exchanged between the atoms in the system. Here, the entire system is coupled to a single thermostat at 298 K, with a coupling time ($\tau_{T}$) of 1.0 ps, which reflects rather tight regulation, which is appropriate for equilibration.
 
 Create the NVT equilibration \texttt{.tpr} file with \texttt{grompp}:
 
@@ -497,7 +513,7 @@ Perform NVT equilibration by invoking \texttt{mdrun}:
 $ gmx mdrun -deffnm nvt
 \end{lstlisting}
 
-After the run, analyze the temperature time series to verify that the target temperature (300 K) was achieved and maintained, using the \texttt{energy} program. At the prompt, type \texttt{16 0}, then Enter. Group 16 is the temperature time series, and 0 terminates input to \texttt{energy}.
+After the run, analyze the temperature time series to verify that the target temperature (298 K) was achieved and maintained, using the \texttt{energy} program. At the prompt, type \texttt{16 0}, then Enter. Group 16 is the temperature time series, and 0 terminates input to \texttt{energy}.
 
 \begin{lstlisting}
 $ gmx energy -f nvt.edr -o temperature.xvg
@@ -507,7 +523,7 @@ The time series of temperature during NVT is shown in Figure~\ref{lyso_nvt_temp_
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_nvt_temperature}
+\includegraphics[width=\columnwidth]{plot_lyso_nvt_temperature}
 \caption{Temperature of the solvated lysozyme system over time during NVT equilibration.}
 \label{lyso_nvt_temp_fig}
 \end{figure}
@@ -515,15 +531,15 @@ The time series of temperature during NVT is shown in Figure~\ref{lyso_nvt_temp_
 As it is ultimately desirable to conduct the production MD simulation under NPT conditions (reflecting typical laboratory conditions), equilibration is continued under an NPT ensemble. Position restraints are maintained on the protein non-hydrogen atoms. New settings in the \texttt{.mdp} file related to pressure coupling are as follows:
 
 \begin{lstlisting}
-pcoupl                  = Parrinello-Rahman
+pcoupl                  = C-rescale
 pcoupltype              = isotropic
-tau_p                   = 2.0
+tau_p                   = 5.0
 ref_p                   = 1.0
 compressibility         = 4.5e-5
 refcoord_scaling        = com
 \end{lstlisting}
 
-The equilibration protocol utilizes a barostat method proposed by Parrinello and Rahman~\cite{Parrinello1981}, and later modified by Nos\'e and Klein~\cite{Nose1983}. As with thermostats explained in the NVT equilibration step, barostats require a reference pressure (\texttt{ref\_p}) and a period of time over which the pressure of the system is allowed to relax towards the target (\texttt{tau\_p}). The \texttt{pcoupltype} keyword controls the deformation of the box in all three dimensions. For a homogenous system such as the one constructed here, it is appropriate to scale all box vectors uniformly. Such scaling is achieved with \texttt{isotropic} pressure coupling. GROMACS has options for semi-isotropic, with $x$ and $y$ coupled together, $z$ coupled independently, as will be used in the membrane protein tutorial (see Section~\ref{kalp}). Anisotropic coupling allows all dimensions (including diagonal elements of the box) to be scaled separately (useful for crystalline materials and solid phases). The \texttt{compressibility} setting controls the speed of the response of the barostat and is, by default, set to the isothermal compressibility of water (4.5 $\times$ 10\textsuperscript{-5} bar\textsuperscript{-1}). 
+The equilibration protocol utilizes a barostat method that is conceptually similar to the V-rescale thermostat. As with thermostats explained in the NVT equilibration step, barostats require a reference pressure (\texttt{ref\_p}) and a period of time over which the pressure of the system is allowed to relax towards the target (\texttt{tau\_p}). The \texttt{pcoupltype} keyword controls the deformation of the box in all three dimensions. For a homogenous system such as the one constructed here, it is appropriate to scale all box vectors uniformly. Such scaling is achieved with \texttt{isotropic} pressure coupling. GROMACS has options for semi-isotropic, with $x$ and $y$ coupled together, $z$ coupled independently, as will be used in the membrane protein tutorial (see Section~\ref{kalp}). Anisotropic coupling allows all dimensions (including diagonal elements of the box) to be scaled separately (useful for crystalline materials and solid phases). The \texttt{compressibility} setting controls the speed of the response of the barostat and is, by default, set to the isothermal compressibility of water (4.5 $\times$ 10\textsuperscript{-5} bar\textsuperscript{-1}). 
 
 The \texttt{refcoord\_scaling} setting is often confusing for new users. Pressure is scaled by actually scaling atomic coordinates as a function of increases or decreases in box size. The reference coordinates (see NVT equilibration above) set the origin of the position restrain biasing potential. If the reference coordinates are not similarly scaled, the forces applied due to the restraints will accumulate and become artificial as the updated coordinates drift slightly and are scaled, while the reference coordinates remain fixed. Reference coordinates can be scaled either based on the center-of-mass (COM) of the restrained molecule(s) or by individual atoms. In principle, either approach works sufficiently well for equilibration, but scaling relative to the COM of the restrained molecule(s) is often somewhat more numerically stable, especially for systems that are not necessarily at thermodynamic equilibrium.
 
@@ -541,32 +557,32 @@ As before, execute \texttt{mdrun} to perform NPT equilibration:
 $ gmx mdrun -deffnm npt
 \end{lstlisting}
 
-After the run has concluded, again use the \texttt{energy} program, in this case to extract the pressure time series. Enter 18 to select Pressure, and 0 to terminate input to \texttt{energy}:
+After the run has concluded, again use the \texttt{energy} program, in this case to extract the pressure time series. Enter 17 to select Pressure, and 0 to terminate input to \texttt{energy}:
 
 \begin{lstlisting}
 $ gmx energy -f npt.edr -o pressure.xvg
 \end{lstlisting}
 
-The pressure time series is plotted in Figure~\ref{lyso_npt_pres_fig}. The screen output also indicates that the average pressure was 7.5 $\pm$ 160.5 bar. The target value was 1 bar. This discrepancy is often a source of concern for new users. Consider, however, the large error bar associated with the time series, and the wide range of pressure values sampled during the simulation (Figure~\ref{lyso_npt_pres_fig}). Pressure is a quantity that fluctuates wildly in a microscopic system. As a result, instantaneous values are going to vary considerably, and average values may not correspond exactly to the desired target value. However, given the huge standard deviation of pressure during NPT equilibration (160.5 bar), the average obtained during the simulation (7.5 bar) is statistically indistinguishable from the target of 1 bar. It is possible to extend the NPT equilibration phase for additional time in an attempt to obtain better agreement, but it is not necessary to do so. The existing agreement is sufficient.
+The pressure time series is plotted in Figure~\ref{lyso_npt_pres_fig}. The screen output also indicates that the average pressure was -3 $\pm$ 11 bar. The target value was 1 bar. This discrepancy is often a source of concern for new users. Consider, however, the large error bar associated with the time series, and the wide range of pressure values sampled during the simulation (Figure~\ref{lyso_npt_pres_fig}). Pressure is a quantity that fluctuates wildly in a microscopic system. As a result, instantaneous values are going to vary considerably, and average values may not correspond exactly to the desired target value. However, given the large standard deviation of pressure during NPT equilibration (11 bar), the average obtained during the simulation (-3 bar) is statistically indistinguishable from the target of 1 bar. It is possible to extend the NPT equilibration phase for additional time in an attempt to obtain better agreement, but it is not necessary to do so. The existing agreement is sufficient.
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_npt_pressure}
+\includegraphics[width=\columnwidth]{plot_lyso_npt_pressure}
 \caption{Pressure of the solvated lysozyme system over time during NPT equilibration.}
 \label{lyso_npt_pres_fig}
 \end{figure}
 
-An additional indicator of the convergence of NPT equilibration is the density of the system. Density is less prone to the fluctuations observed in the instantaneous pressure values. Again, use the \texttt{energy} program to extract the density time series from the \texttt{npt.edr} file, choosing 24 for density and 0 to terminate input:
+An additional indicator of the convergence of NPT equilibration is the density of the system. Density is less prone to the fluctuations observed in the instantaneous pressure values. Again, use the \texttt{energy} program to extract the density time series from the \texttt{npt.edr} file, choosing 23 for density and 0 to terminate input:
 
 \begin{lstlisting}
 $ gmx energy -f npt.edr -o density.xvg
 \end{lstlisting}
 
-The density time series is shown in Figure~\ref{lyso_npt_dens_fig}. The average value from NPT equilibration is 1019 $\pm$ 3 kg m\textsuperscript{-3}. Note that this value is about two percent higher than the expected value for bulk SPC/E water (998 kg m\textsuperscript{-3})~\cite{Berendsen1987}. Such an outcome is not unusual, as the system contains a protein and ions, therefore its density will not be exactly equivalent to that of pure water.
+The density time series is shown in Figure~\ref{lyso_npt_dens_fig}. The average value from NPT equilibration is 1025.3 $\pm$ 0.5 kg m\textsuperscript{-3}. Note that this value is about 2.7\% percent higher than the expected value for bulk TIP3P water (986 kg m\textsuperscript{-3})~\cite{Jorgensen1983}. Such an outcome is not unusual, as the system contains a protein and ions, therefore its density will not be exactly equivalent to that of pure water.
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_npt_density}
+\includegraphics[width=\columnwidth]{plot_lyso_npt_density}
 \caption{Density of the solvated lysozyme system over time during NPT equilibration.}
 \label{lyso_npt_dens_fig}
 \end{figure}
@@ -580,15 +596,15 @@ At this point, the solvent has relaxed around the protein and the system is equi
 Production MD proceeds like any other process carried out thus far, with the generation of a \texttt{.tpr} input file with \texttt{grompp}, providing the coordinates and checkpoint file from NPT equilibration to ensure an exact continuation:
 
 \begin{lstlisting}
-$ gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -o md_0_1.tpr
+$ gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -o md_0_10.tpr
 \end{lstlisting}
 %
-Note that in this \texttt{grompp} command, there is no use of \texttt{-r}, as no restraints are being applied. The \texttt{.mdp} settings are the same as during NPT equilibration, except no restraints are specified and the run is being carried out for 500,000 steps, corresponding to 1 ns (500,000 steps $\times$ 0.002 ps per step = 1000 ps = 1 ns).
+Note that in this \texttt{grompp} command, there is no use of \texttt{-r}, as no restraints are being applied. The \texttt{.mdp} settings are the same as during NPT equilibration, except no restraints are specified and the run is being carried out for 5,000,000 steps, corresponding to 10 ns (5,000,000 steps $\times$ 0.002 ps per step = 10,000 ps = 10 ns).
 
-As before, it is useful to name files in accordance with the time interval and process being simulated. Here, the user will perform a 1-ns, unrestrained MD simulation, starting from t = 0 ns (equilibration time is not counted) and proceeding to t = 1 ns, hence the base file name of \texttt{md\_0\_1}. To run the simulation, invoke \texttt{mdrun}:
+As before, it is useful to name files in accordance with the time interval and process being simulated. Here, the user will perform a 10-ns, unrestrained MD simulation, starting from t = 0 ns (equilibration time is not counted) and proceeding to t = 1 ns, hence the base file name of \texttt{md\_0\_10}. To run the simulation, invoke \texttt{mdrun}:
 
 \begin{lstlisting}
-$ gmx mdrun -deffnm md_0_1
+$ gmx mdrun -deffnm md_0_10
 \end{lstlisting}
 
 \subsubsection{Data Analysis} \label{lyso_ana}
@@ -600,7 +616,7 @@ The first step in analysis is to remove the influence of PBC that were applied d
 The GROMACS program that applies coordinate manipulations to account for periodicity effects is called \texttt{trjconv} ("trajectory converter") and it serves a number of functions. Beyond accounting for PBC effects, it can be used to convert file formats or save a subset of atoms from the system. In this case, only a simple invocation of \texttt{trjconv} is necessary, to simultaneously make "broken" molecules appear whole and to center the protein in the unit cell. These processes can be done in a single command:
 
 \begin{lstlisting}
-$ gmx trjconv -s md_0_1.tpr -f md_0_1.xtc -o md_0_1_noPBC.xtc -pbc mol -center
+$ gmx trjconv -s md_0_10.tpr -f md_0_10.xtc -o md_0_10_noPBC.xtc -pbc mol -center
 \end{lstlisting}
 %
 The user is prompted for two selections. The first requires a choice of which group to center in the unit cell. Choose group 1 (Protein). The second prompt asks the user to choose which group should be output in the modified trajectory. For simplicity, choose group 0 (System).
@@ -612,7 +628,7 @@ At this point, the user should visualize the trajectory using programs like VMD~
 If one is interested in quantifying how much the protein structure changed over the course of the simulation, the root-mean-square deviation (RMSD) can be computed. RMSD is calculated following a least-squares fit to the reference structure and is plotted as a function of time. The GROMACS program that computes RMSD is called \texttt{rms}. It reads the reference coordinates, masses, and topology from the \texttt{.tpr} file passed to \texttt{-s} and computes the RMSD for each frame found in the trajectory passed to \texttt{-f}. Typically, the RMSD of a protein is calculated for its backbone (N, C\textsubscript{$\alpha$}, C) or "main chain" (N, C\textsubscript{$\alpha$}, C, O) atoms rather than the entire structure. Flexible side chains may have large RMSD that do not actually reflect meaningful structural changes. To calculate the RMSD of the protein backbone with respect to the equilibrated coordinates, invoke \texttt{rms} as follows:
 
 \begin{lstlisting}
-$ gmx rms -s md_0_1.tpr -f md_0_1_noPBC.xtc -o rmsd.xvg -tu ns
+$ gmx rms -s md_0_10.tpr -f md_0_10_noPBC.xtc -o rmsd.xvg -tu ns
 \end{lstlisting}
 %
 When prompted, choose group 4 (Backbone) for both the group for fitting and the group for output. The RMSD thus reflects the net change in backbone configuration after accounting for global rotation and translation.
@@ -620,34 +636,84 @@ When prompted, choose group 4 (Backbone) for both the group for fitting and the 
 It may also be of interest to calculate the RMSD with respect to some other structure, such as a specific frame of interest or the crystal structure rather than the equilibrated (t = 0 ns) coordinates. To compute the RMSD with respect to the crystal structure, provide \texttt{rms} with the \texttt{em.tpr} file, which was the input to energy minimization. The coordinates of the protein contained therein are the crystal structure with the hydrogen atoms added by \texttt{pdb2gmx}. Invoke \texttt{rms} again:
 
 \begin{lstlisting}
-$ gmx rms -s em.tpr -f md_0_1_noPBC.xtc -o rmsd_xtal.xvg -tu ns
+$ gmx rms -s em.tpr -f md_0_10_noPBC.xtc -o rmsd_xtal.xvg -tu ns
 \end{lstlisting}
 %
 As before, choose group 4 (Backbone) for both the group for fitting and the group for output. The two resulting RMSD time series can be plotted together, as shown in Figure~\ref{lyso_md_rmsd_fig}.
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_md_rmsd}
-\caption{RMSD of the lysozyme backbone atoms during the production MD simulation following least-squares fitting to the indicated reference structures.}
+\includegraphics[width=\columnwidth]{plot_lyso_md_rmsd}
+\caption{RMSD of the lysozyme backbone atoms during the production MD simulation following least-squares fitting to the indicated reference structures. Solid lines correspond to 500-ps (50-frame) running averages.}
 \label{lyso_md_rmsd_fig}
 \end{figure}
 
-The RMSD values with respect to the crystal structure and equilibrated system are not identical, with the RMSD to the crystal reference being systematically higher than the RMSD to the equilibrated structure. This outcome is not unexpected. Though restraints were applied during equilibration, it is not guaranteed that the protein will not move. Instead, it moves slightly but overall, its conformation is maintained. After about 0.5 ns, the RMSD levels off around 0.1 nm (1~\AA), which is quite small and suggests the protein is very stable. It is appropriate to use this space to dispel several common misconceptions about RMSD. First, it is a degenerate metric, meaning a single value can have multiple interpretations (mathematical solutions), and as such on its own, RMSD is not very useful. Second, one cannot say that a simulation has converged simply based on RMSD, due to the first point $-$ a structure can still be changing considerably from its starting structure even if the RMSD has largely plateaued. Therefore, one should never terminate a simulation, believing it to be "stable" or "converged" simply by looking at RMSD.
+The RMSD values with respect to the crystal structure and equilibrated system are not identical, with the RMSD to the crystal reference being systematically higher than the RMSD to the equilibrated structure. This outcome is not unexpected. Though restraints were applied during equilibration, it is not guaranteed that the protein will not move. Instead, it moves slightly but overall, its conformation is maintained. After about 2.5 ns, the RMSD levels off around 0.09 nm (0.9~\AA), which is quite small and suggests the protein structure has deviated very little from the starting coordinates. It is appropriate to use this space to dispel several common misconceptions about RMSD. First, it is a degenerate metric, meaning a single value can have multiple interpretations (mathematical solutions), and as such on its own, RMSD is not very useful. Second, one cannot say that a simulation has converged simply based on RMSD, due to the first point $-$ a structure can still be changing considerably from its starting structure even if the RMSD has largely plateaued. Therefore, one should never terminate a simulation, believing it to be "stable" or "converged" simply by looking at RMSD.
 
 As a final example of analysis, calculate the radius of gyration (R\textsubscript{g}) of lysozyme over time with the GROMACS \texttt{gyrate} program. This quantity is not particularly useful for systems of well-folded proteins, as it is a measure of compactness, a quantity expected to be largely constant for a protein with stable tertiary structure. Calculating R\textsubscript{g} demonstrates an advanced capability of GROMACS. Invoke \texttt{gyrate} as follows:
 
 \begin{lstlisting}
-$ gmx gyrate -s md_0_1.tpr -f md_0_1_noPBC.xtc -o gyrate.xvg
+$ gmx gyrate -s md_0_10.tpr -f md_0_10_noPBC.xtc -o gyrate.xvg
 \end{lstlisting}
 
 \begin{figure}[h]
 \centering
-\includegraphics{plot_lyso_md_rg}
-\caption{Radius of gyration of lysozyme during the production MD simulation.}
+\includegraphics[width=\columnwidth]{plot_lyso_md_rg}
+\caption{Radius of gyration of lysozyme during the production MD simulation. Solid lines correspond to 500-ps (50-frame) running averages.}
 \label{lyso_md_rg_fig}
 \end{figure}
 
-The R\textsubscript{g} time series is shown in Figure~\ref{lyso_md_rg_fig}. This quantity is similarly stable over this short simulation, which is expected given the stable fold of lysozyme and the very short nature of the simulation. Large structural changes are not expected within 1 ns for any protein.
+The R\textsubscript{g} time series is shown in Figure~\ref{lyso_md_rg_fig}. This quantity is similarly stable over this short simulation, which is expected given the stable fold of lysozyme and the very short nature of the simulation. Large structural changes are not expected within 10 ns for any protein.
+
+One can also look at the evolution of secondary structure in a protein. This analysis is carried out with the \texttt{dssp} program, which uses the DSSP (Dictionary of Secondary Structure of Proteins) algorithm~\cite{Kabsch1983}:
+
+\begin{lstlisting}
+$ gmx dssp -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -o dssp.dat -num dssp_num.xvg
+\end{lstlisting}
+
+The output of the DSSP analysis is shown in Figure~\ref{lyso_md_dssp_fig}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{plot_lyso_md_dssp}
+\caption{Evolution of secondary structure elements during the production MD simulation. Solid lines correspond to 500-ps (50-frame) running averages.}
+\label{lyso_md_dssp_fig}
+\end{figure}
+
+The last analysis to be presented here regards hydrogen bonds. GROMACS uses two criteria to determine if a hydrogen bond exists between two groups: (1) the donor-H distance (defaults to 0.35 nm or less, can be tuned with \texttt{-hbr}) and (2) the donor-acceptor-H angle (defaults to 30\textdegree, can be tuned with \texttt{-hba}). Note the order of atoms in the angle criterion; GROMACS does not use the donor-H-acceptor angle as is employed in other software. Hydrogen bonds are highly directional and are strongest when linear, so the use of donor-acceptor-H $\le$ 30\textdegree means that donor-H-acceptor angles will range from 150\textdegree $-$ 180\textdegree.
+
+The user is prompted for two selections when computing hydrogen bonds. These groups must be either identical or completely distinct (no shared atoms). Several examples are illustrated below. The first is the number of hydrogen bonds within the backbone of the protein.
+
+\begin{lstlisting}
+$ gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_mainchain.xvg
+\end{lstlisting}
+
+Select the ``MainChain+H'' group (7) for both selections when prompted. In GROMACS, the ``MainChain'' group contains the N, C$\alpha$, C, and O atoms. ``MainChain+H'' includes those four atoms, plus the amide H atom, which is required for assignment of hydrogen bonds. In GROMACS convention, ``Backbone'' contains only N, C$\alpha$, and C atoms; no hydrogen bonds can be computed from this group, despite the vernacular of ``backbone hydrogen bonds.''
+
+Next, compute hydrogen bonds formed among sidechain atoms:
+
+\begin{lstlisting}
+$ gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_sidechain.xvg
+\end{lstlisting}
+
+Select the ``SideChain'' group (8) for both selections.
+
+Finally, we will compute hydrogen bonds between the protein and water:
+
+\begin{lstlisting}
+gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_prot_wat.xvg
+\end{lstlisting}
+
+Select ``Protein'' (1) and ``Water'' (12) or ``SOL'' (13) as the two groups (``Water'' and ``SOL'' are equivalent).
+
+Plotted together, the results should resemble what is shown in Figure~\ref{lyso_md_hbond_fig}:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{plot_lyso_md_hbonds}
+\caption{Evolution of hydrogen bonds between various groups during the production MD simulation. Solid lines correspond to 500-ps (50-frame) running averages.}
+\label{lyso_md_hbond_fig}
+\end{figure}
 
 \subsubsection{Summary and Review of Objectives} \label{lyso_summary}
 
@@ -665,7 +731,7 @@ The first step in the process was the generation of a topology for the protein, 
 
 
 
-%%%%%%%%% TUTORIAL 2 %%%%%%%%%
+%%%%%%%%% FUNDAMENTALS: MEMBRANE PROTEIN %%%%%%%%%
 \subsection{Tutorial 2: KALP\textsubscript{15} in DPPC} \label{kalp}
 
 \begin{figure}[H]
@@ -1159,9 +1225,617 @@ Through this tutorial, the user has been guided through the construction of a me
 By adding parameters from an external force field file (in this case, \texttt{lipid.itp}) to an existing force field, the organization and logic of GROMACS force field files has been illustrated, with some discussion of the theory of force field compatibility. The solvation of a membrane-protein system has been approached through the use of an iterative packing scheme for the DPPC phospholipids, followed by conventional solvation with water and removal of water molecules within the hydrophobic core of the membrane with a custom script. These processes have required the user to become more familiar with GROMACS topology organization, including manual modification that was not required in the first tutorial. Finally, after performing a short simulation on the KALP\textsubscript{15}-DPPC system, several lipid-specific analyses were performed. Though the time scale of this simulation is insufficient to obtain converged data on lipid properties, the tutorial has provided the logic behind constructing complex index groups that are required for performing lipid analysis.
 
 
+%%%%%%%%% FUNDAMENTALS: PROTEIN-LIGAND COMPLEX %%%%%%%%%
+\subsection{Tutorial 3: Protein-Ligand Complex} \label{prot_lig}
 
-%%%%%%%%% TUTORIAL 3 %%%%%%%%%
-\subsection{Tutorial 3: Umbrella Sampling} \label{pmf}
+\begin{figure}[h]
+\centering
+\includegraphics{lysozyme_complex_3htb}
+\caption{Crystal structure of T4 lysozyme L99A/M102Q with bound 2-propylphenol ligand, taken from PDB 3HTB~\cite{Boyce2009}.}
+\label{lyso_complex_3htb_fig}
+\end{figure}
+
+Simulating proteins in complex with small-molecule ligands or inhibitors (Figure~\ref{lyso_complex_3htb_fig}) is an important part of understanding enzyme catalysis, drug design, and allostery. These simulations present a challenge in that the ligand topology is not likely to have been explicitly derived. Force field parametrization is an advanced topic, one that typically requires expert training. To decrease the barrier to performing these important simulations, many "general" or "drug-like" force fields exist, such as the General AMBER Force Field (GAFF)~\cite{Wang2004}, CHARMM General Force Field (CGenFF)~\cite{Vanommeslaeghe2010}, and OPLS3~\cite{Harder2016}, which have well-known methodologies, parameter assignment protocols, and web servers that can generate topologies for arbitrary molecules.
+
+In this tutorial (available online at \tutorialcomplex), the protein topology will be generated with the CHARMM36m force field~\cite{Huang2016}, a recent revision of the CHARMM36 force field~\cite{Best2012}. The ligand topology will be generated with CGenFF via its web server (\url{https://cgenff.com}). Download the CHARMM36m force field in GROMACS format from the MacKerell lab website (\url{http://mackerell.umaryland.edu/charmm_ff.shtml#gromacs}), as well as the Python script called \texttt{cgenff\_charmm2gmx.py} from \url{https://github.com/Lemkul-Lab/cgenff_charmm2gmx}. Extract the force field archive in the working directory or move it to \texttt{\$GMXLIB}, as in Tutorial 1 (Section~\ref{lyso}):
+
+\begin{lstlisting}
+$ tar -zxvf charmm36-feb2026_cgenff-5.0.ff.tgz
+\end{lstlisting}
+
+\subsubsection{Protein Topology Preparation} \label{complex_top}
+
+Download the coordinates for T4 lysozyme L99A/M102Q from PDB entry 3HTB. Remove crystal waters and the phosphate (PO4) and $\beta$-mercaptoethanol (BME) co-solvents from the coordinate file. The online version of the tutorial provides a file called \texttt{3HTB\_clean.pdb} that has already removed the unnecessary atoms.
+
+The GROMACS program \texttt{pdb2gmx} can only generate topologies for species it recognizes, {\em e.g.} those encoded in residue topology (\texttt{.rtp}) files. That means non-standard species like ligands will cause the program to return a fatal error. Thus, \texttt{pdb2gmx} cannot be used to generate a topology for 2-propylphenol. It will be parametrized separately. For now, remove the atoms corresponding to the ligand (residue name JZ4) from the PDB file and save them in a separate file to be used later:
+
+\begin{lstlisting}
+$ grep JZ4 3HTB_clean.pdb > jz4.pdb
+\end{lstlisting}
+%
+After saving these coordinates, delete the JZ4 coordinate lines from \texttt{3HTB\_clean.pdb} and generate the protein topology with \texttt{pdb2gmx}:
+
+\begin{lstlisting}
+$ gmx pdb2gmx -f 3HTB_clean.pdb -o 3HTB_processed.gro
+\end{lstlisting}
+%
+When prompted, choose the CHARMM36 force field (the first entry in the list, "From current directory") and the default water model, TIP3P modified for use with CHARMM.
+
+\subsubsection{Ligand Topology Preparation} \label{complex_lig_top}
+
+The principal challenge in performing a protein-ligand simulation is generating a topology for the ligand. Most biomolecular force fields include parameters for common cofactors (heme, ATP, etc.) but do not have existing parameters for every molecule that may be of interest in a simulation. The general force fields listed above seek to remedy this situation, by establishing highly transferable atom types and parameters that can be assigned to arbitrary molecules according to established rules. Doing so removes the burden of manual parametrization from the user, as these procedures often require expert training. General force fields are not necessarily perfect, and there are instances for which manual refinement or reparametrization may be necessary, but they provide a reasonable starting point for these efforts.
+
+In this tutorial, the CGenFF parameter set will be used to generate the topology for the 2-propylphenol ligand (Figure~\ref{jz4_fig}). CGenFF is both a parameter set (compatible with the CHARMM force field) and a program that builds small-molecule topologies according to existing rules~\cite{Vanommeslaeghe2012a,Vanommeslaeghe2012b}. The CGenFF program can be accessed via a web server (\url{https://cgenff.com}), which will be used in this tutorial. The input to the CGenFF program is a \texttt{.mol2} file, which contains atom names, coordinates, Tripos atom types, charges, and bonded connectivity. CGenFF uses these atom types and charges to perform its own parametrization.
+
+\begin{figure}[h!]
+\centering
+\includegraphics{jz4}
+\caption{The structure of 2-propylphenol, with hydrogen atoms added. Each atom is labeled by name.}
+\label{jz4_fig}
+\end{figure}
+
+To prepare the \texttt{.mol2} file, download and install the Avogadro molecular editor (\url{https://avogadro.cc/})~\cite{Hanwell2012}. Open \texttt{jz4.pdb} within Avogadro, and from the "Build" menu, choose "Add Hydrogens." Save a \texttt{.mol2} file called \texttt{jz4.mol2}. Several corrections to this file are necessary. The second line of the file, under the \texttt{@<TRIPOS>MOLECULE} heading, reads simply "*****" in place of a residue name. Replace this text with "JZ4." The hydrogen atoms that were added are assigned a different residue name and number, which must be manually corrected. Every instance of "JZ167" or "UNL1" should be replaced with "JZ4," and every atom should have a residue number of 1. The corrected \texttt{jz4.mol2} file is provided in the online version of the tutorial.
+
+This file is syntactically valid, but still needs modification. The bonds in the \texttt{@<TRIPOS>BONDS} section do not appear in ascending numerical order, which will cause problems for CGenFF. To correct this bond listing, use the \texttt{sort\_mol2\_bonds.pl} script provided with the online tutorial:
+
+\begin{lstlisting}
+$ perl sort_mol2_bonds.pl jz4.mo2 jz4_fix.mol2
+\end{lstlisting}
+%
+The final, fully corrected file \texttt{jz4\_fix.mol2} is what will be used as input to the CGenFF server.
+
+The \texttt{jz4\_fix.mol2} will next be uploaded to the CGenFF web server. The use of this server is free for academic purposes, though user registration is required. Once \texttt{jz4\_fix.mol2} has been uploaded, the server will return a topology and parameter file in a CHARMM-formatted stream file (\texttt{jz4.str}). This file should be downloaded from the CGenFF website so it can be converted to GROMACS format. Before continuing, the contents of \texttt{jz4.str} should be inspected. CGenFF calculates penalty scores as an indicator of the quality of the topology. Parameters are assigned by analogy, and in cases for which a strong match cannot be made, the penalty score will be large. Any penalty less than 10 indicates a reliable topology. Penalties between 10 and 50 inform the user that some refinement may be necessary, and at minimum, some basic validation should be performed (QM potential energy scans in the case of bonded parameters, QM water interactions for charges), and penalty scores larger than 50 indicate that significant manual refinement or reparametrization is required. The CGenFF topology for 2-propylphenol has penalties below 1 for both charges and the new dihedrals that were generated. This topology is likely suitable for use directly as it is.
+
+To produce a GROMACS-formatted topology, use the \\\texttt{cgenff\_charmm2gmx.py} script downloaded earlier from the MacKerell lab website. Invoke it as follows:
+
+\begin{lstlisting}
+$ python cgenff_charmm2gmx.py JZ4 jz4_fix.mol2 jz4.str charmm36-feb2026_cgenff-5.0.ff
+\end{lstlisting}
+%
+Recall from the introduction that this conversion script requires a Python version in the 2.7.x series, with a NetworkX version in the 1.11.x series, not the 2.x series. When finished, the conversion script will produce three important output files:
+
+\begin{enumerate}
+	\item \texttt{jz4.itp} - the topology of 2-propylphenol (JZ4) in GROMACS format
+	\item \texttt{jz4.prm} - additional parameters required for the ligand topology
+	\item \texttt{jz4\_ini.pdb} - the coordinates of the ligand
+\end{enumerate}
+
+To regenerate the protein-ligand complex, the coordinates of JZ4 (with hydrogen atoms added) must be appended to those of the T4 lysozyme enzyme. First, convert the \texttt{jz4\_ini.pdb} to \texttt{.gro} format:
+
+\begin{lstlisting}
+$ gmx editconf -f jz4_ini.pdb -o jz4.gro
+\end{lstlisting}
+
+Copy the enzyme coordinates from \texttt{3HTB\_processed.gro} to a new file, called \texttt{complex.gro}. Copy and paste the coordinates from \texttt{jz4.gro} into \texttt{complex.gro}, immediately after the protein coordinates and before the last line containing the box vectors. The JZ4 ligand contains 22 atoms, so add 22 to the number of protein atoms in the second line of \texttt{complex.gro}. There should be 2636 atoms in this coordinate file after the addition of the ligand coordinates.
+
+Having added the coordinates of the ligand to the system, the topology must also be updated. Add the ligand topology to \texttt{topol.top} as shown here:
+
+\begin{lstlisting}
+; Include Position restraint file
+#ifdef POSRES
+#include "posre.itp"
+#endif
+
+; Include ligand topology
+#include "jz4.itp"
+
+; Include water topology
+#include "./charmm36-feb2026_cgenff-5.0.ff/tip3p.itp"
+\end{lstlisting}
+
+Since the ligand requires new parameters to be added to the force field, the \texttt{jz4.prm} file must also be add to the topology via an \texttt{\#include} statement. Such a statement must be placed specifically within \texttt{topol.top}. It must be after the \texttt{\#include} statement for the CHARMM36 force field, but before the declaration of the protein \texttt{[moleculetype]} directive. Bonded parameters can only be added for known atom types, hence why \texttt{jz4.prm} must be added after the first call to the CHARMM36 force field. Similarly, all parameters in the force field must be defined before any molecule definitions can be introduced. Therefore, update \texttt{topol.top} to read as follows:
+
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+; Include forcefield parameters
+#include "./charmm36-feb2026_cgenff-5.0.ff/forcefield.itp"
+
+; Include ligand parameters
+#include "jz4.prm"
+
+[ moleculetype ]
+; Name            nrexcl
+Protein_chain_A     3
+\end{lstlisting}
+
+Finally, update the contents of the \texttt{[ molecules ]} directive of \texttt{topol.top} to reflect the fact that the ligand coordinates have been added to the system:
+
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+[ molecules ]
+; Compound        #mols
+Protein_chain_A     1
+JZ4                 1
+\end{lstlisting}
+
+\subsubsection{Solvate the System} \label{complex_solv}
+
+The remaining steps in preparing the simulation system are much like any other system of a protein in water. In this tutorial example, the protein-ligand complex will be solvated in a rhombic dodecahedral unit cell, which requires only approximately 77\% of the volume of a cubic unit cell with the same periodic distance. It is therefore more efficient to use such a box shape. Place the T4 lysozyme-JZ4 complex in a rhombic dodecahedral box with \texttt{editconf} and add water with \texttt{solvate}.
+
+\begin{lstlisting}
+$ gmx editconf -f complex.gro -o newbox.gro -bt dodecahedron -d 1.0
+
+$ gmx solvate -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro
+\end{lstlisting}
+
+When visualized, it will appear that the protein-ligand complex has not been centered in the box and the added water appears to occupy a tetragonal unit cell. This point is often confusing for new users but should not be a concern. By default, GROMACS will re-wrap the coordinates into a triclinic box, which is the most efficient form for carrying out the necessary vector operations during a simulation. The coordinates of the solvated system and their relationship to a triclinic unit cell are shown in Figure~\ref{3htb_unit_cell_fig}. Recovering the dodecahedral box shape will be discussed later in this tutorial, but it is not necessary to make any changes to the solvated coordinates. The desired geometry will be used in the simulation.
+
+\begin{figure}[h!]
+\centering
+\includegraphics{3htb_unit_cell}
+\caption{The coordinates of the solvated system and within a triclinic unit cell shape.}
+\label{3htb_unit_cell_fig}
+\end{figure}
+
+Next, add neutralizing counterions to the system. The T4 lysozyme enzyme carries a +6 charge at neutral pH, so 6 Cl\textsuperscript{$-$} ions will be added by \texttt{genion}.
+
+\begin{lstlisting}
+$ gmx grompp -f ions.mdp -c solv.gro -p topol.top -o ions.tpr
+
+$ gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral
+\end{lstlisting}
+
+\subsubsection{Energy Minimization and Equilibration} \label{complex_em_eq}
+
+The solvated, neutralized system will be energy-minimized and equilibrated in two phases, $NVT$ and $NPT$, following the same protocol as the lysozyme system described above (Sections~\ref{lyso_em} and~\ref{lyso_equil}). There are notable differences in the \texttt{.mdp} files used here that warrant further explanation. The CHARMM36 force field requires the use of a switching function on the short-range forces, rather than a plain cutoff. The relevant settings are listed here:
+
+\begin{lstlisting}
+cutoff-scheme           = Verlet
+ns_type                 = grid
+nstlist                 = 20
+rlist                   = 1.2
+vdwtype                 = cutoff
+vdw-modifier            = force-switch
+rvdw-switch             = 1.0
+rvdw                    = 1.2
+\end{lstlisting}
+
+The short-range nonbonded cutoff is set to 1.2 nm, and a buffered neighbor list is constructed with the Verlet cutoff scheme, meaning that the actual value of \texttt{rlist} will be increased as needed to conserve energy. The van der Waals forces are truncated (\texttt{vdwtype = cutoff}) at 1.2 nm (\texttt{rvdw}), with an "inner" cutoff of 1.0 nm set with \texttt{rvdw-switch}, specifying the start of a region over which the forces are smoothly switched to zero, specified by \texttt{vdw-modifier = force-switch}. This nonbonded convention is the one for which the CHARMM force field was parametrized. It is important to utilize these settings to ensure a valid simulation. Electrostatic forces are calculated with PME and a real-space cutoff of 1.2 nm.
+
+\begin{lstlisting}
+$ gmx grompp -f em.mdp -c solv_ions.gro -p topol.top -o em.tpr
+
+$ gmx mdrun -deffnm em
+\end{lstlisting}
+
+During equilibration, the solute non-hydrogen atoms are typically restrained. In this system, the solute includes the 2-propylphenol ligand, but no restraint topology exists for it. The GROMACS \texttt{genrestr} program can be used to create such a topology, but first an index group specifying only the non-hydrogen atoms in the ligand is required. Create the index file with \texttt{make\_ndx}:
+
+\begin{lstlisting}
+gmx make_ndx -f jz4.gro -o index_jz4.ndx
+> 0 & ! a H*
+> q
+\end{lstlisting}
+%
+The expression above (\texttt{0 \& ! a H*}) selects all atoms in the system (group 0) that do not (!) have names starting with H. Once this index file has created, use it to write a position restraint topology for the ligand, selecting group 3 when prompted.
+
+\begin{lstlisting}
+$ gmx genrestr -f jz4.gro -o posre_jz4.itp -n index_jz4.ndx -fc 1000 1000 1000
+\end{lstlisting}
+
+In Section~\ref{lyso_equil}, the concept of thermostats was introduced. The typical strategy is to assign solute and solvent atom to separate thermostatting groups. In this case, the ligand is encompassed by the default \texttt{non-Protein} group. Given that the ligand is physically bound to the protein, its dynamics are therefore coupled to those of the protein in a way that makes it illogical to include the ligand in the generic \texttt{non-Protein} group, which includes solvent. It is more logical to couple the ligand together with the protein. To do so, again invoke \texttt{make\_ndx} to merge the "Protein" and "JZ4" groups (1 and 13, respectively):
+
+\begin{lstlisting}
+$ gmx make_ndx -f em.gro -o index.ndx
+...
+> 1 | 13
+> q
+\end{lstlisting}
+
+Then, continue with $NVT$ and $NPT$ equilibration. In each, the thermostat has two groups (\texttt{tc-grps}). One is set to the merged protein-ligand group (\texttt{Protein\_JZ4}) and the other is the solvent (\texttt{Water\_and\_ions}).
+
+\begin{lstlisting}
+$ gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -n index.ndx -o nvt.tpr
+
+$ gmx mdrun -deffnm nvt
+\end{lstlisting}
+
+\begin{lstlisting}
+$ gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p topol.top -n index.ndx -o npt.tpr
+
+$ gmx mdrun -deffnm npt
+\end{lstlisting}
+
+\subsubsection{Production MD Simulation} \label{complex_md}
+
+Once equilibrated, the position restraints are released and a production MD simulation is performed. All settings in the \texttt{.mdp} file are familiar by now and need no repeating here. In this tutorial, the simulation will be carried out for 10 ns, which is still generally too short for most real purposes, but enough time to illustrate some principles of post-processing and analysis in the next section.
+
+\begin{lstlisting}
+$ gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o md_0_10.tpr
+
+$ gmx mdrun -deffnm md_0_10
+\end{lstlisting}
+
+\subsubsection{Analysis} \label{complex_analysis}
+
+After the simulation is over, the effects of periodic boundary conditions must be accounted for, as in Section~\ref{lyso_ana}. The GROMACS \texttt{trjconv} program is again used to perform the required coordinate manipulations. Additionally, \texttt{trjconv} allows for re-wrapping of the coordinates to recover the rhombic dodecahedral box shape. Process the MD trajectory by placing all whole molecules in the box, wrapping the coordinates into their most compact form, and centering the protein:
+
+\begin{lstlisting}
+$ gmx trjconv -s md_0_10.tpr -f md_0_10.xtc -o md_0_10_center.xtc -center -pbc mol -ur compact
+\end{lstlisting}
+%
+Choose the "Protein" group for centering  and "System" for output.
+
+To visualize the trajectory in a program like VMD, extract the first frame and save it as a coordinate file (\texttt{.gro} or \texttt{.pdb} format):
+
+\begin{lstlisting}
+$ gmx trjconv -s md_0_10.tpr -f md_0_10_center.xtc -o start.pdb -dump 0
+\end{lstlisting}
+%
+It is also apparent that this coordinate file has the expected box shape (Figure~\ref{3htb_t0_rewrap_fig}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics{3htb_t0_rewrap}
+\caption{The coordinates of the solvated, equilibrated system after coordinate re-wrapping to yield the most compact box shape, the rhombic dodecahedron.}
+\label{3htb_t0_rewrap_fig}
+\end{figure}
+
+To make an even smoother rendering of the trajectory, perform rotational and translational fitting. Select "Backbone" for fitting and "System" for output. Note that fitting and PBC re-wrapping cannot be performed at the same time, hence there are two calls to \texttt{trjconv} needed to perform these steps. Rotational and translational fitting via \texttt{trjconv} is not required for analysis, but can be useful for visualization, particularly for long trajectories in which the protein may diffuse substantially.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics{3htb_jz4_zoom}
+\caption{The 2-propylphenol ligand in the active site of T4 lysozyme after energy minimization, with nearby Gln102 shown in ball-and-stick rendering.}
+\label{3htb_jz4_zoom_fig}
+\end{figure}
+
+\begin{lstlisting}
+$ gmx trjconv -s md_0_10.tpr -f md_0_10_center.xtc -o md_0_10_fit.xtc -fit rot+trans
+\end{lstlisting}
+
+The 2-propylphenol ligand principally interacts with T4 lysozyme via hydrophobic interactions, but it can form one hydrogen bond with the enzyme, between the hydroxyl group of the ligand phenol moiety and the carbonyl oxygen atom (O$\epsilon$) of Gln102 (Figure~\ref{3htb_jz4_zoom_fig}). The initial position of the phenolic hydrogen atom built by Avogadro is such that this hydrogen bond is not formed, even after energy minimization. It may be of interest to monitor the formation of this hydrogen bond during the simulation to see if it is indeed a stabilizing force, as expected. The GROMACS \texttt{hbond} program can be useful for this purpose, but in this tutorial, a different approach will be taken, as \texttt{hbond} will just produce a series of 0 or 1 values over time. A typical hydrogen bond is defined as having a donor-acceptor distance $\le$ 3.5 \AA~(0.35 nm) and a donor - acceptor - hydrogen angle of $\le$ 30\textdegree~(alternatively defined as a donor - hydrogen - acceptor angle of $\ge$ 150\textdegree). Here, two different programs will be used to generate distance and angle time series, demonstrating how to use the GROMACS \texttt{distance} and \texttt{angle} programs, as well as additional use of \texttt{make\_ndx} to create index groups needed for the angle analysis.
+
+To compute the distance between the JZ4 phenol oxygen atom (named OAB, see Figure~\ref{jz4_fig}) and the Gln102 O$\epsilon$ atom (named OE1), execute the GROMACS \texttt{distance} program:
+
+\begin{lstlisting}
+$ gmx distance -s md_0_10.tpr -f md_0_10_center.xtc -select 'resname "JZ4" and name OAB plus resid 102 and name OE1' -oall
+\end{lstlisting}
+%
+The \texttt{distance} program will produce a time series to \texttt{dist.xvg} and will print statistics to the terminal:
+
+\begin{lstlisting}
+Number of samples:  1001
+Average distance:   0.31031  nm
+Standard deviation: 0.05078  nm
+\end{lstlisting}
+
+Next, create an index file consisting of the JZ4 OAB and H12 atoms (Figure~\ref{jz4_fig}) and the Gln102 OE1 atom:
+
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+$ gmx make_ndx -f em.gro -n index.ndx 
+> 13 & a OAB | a H12
+
+Copied index group 13 'JZ4'
+Found 1 atoms with name OAB
+Merged two groups with AND: 22 1 -> 1
+Found 1 atoms with name H12
+Merged two groups with OR: 1 1 -> 2
+
+ 23 JZ4_&_OAB_H12       :     2 atoms
+
+> 1 & r 102 & a OE1
+
+Copied index group 1 'Protein'
+Merged two groups with AND: 2614 17 -> 17
+Found 14 atoms with name OE1
+Merged two groups with AND: 17 14 -> 1
+
+ 24 Protein_&_r_102_&_OE1:     1 atoms
+
+> 23 | 24
+
+Copied index group 23 'JZ4_&_OAB_H12'
+Copied index group 24 'Protein_&_r_102_&_OE1'
+Merged two groups with OR: 2 1 -> 3
+
+ 25 JZ4_&_OAB_H12_Protein_&_r_102_&_OE1:     3 atoms
+\end{lstlisting}
+%
+By supplying the existing \texttt{index.ndx} file to \texttt{make\_ndx}, the new groups will be appended to the existing input file that was used previously for the simulations. The first selection (\texttt{13 \& a OAB | a H12}) specifies the atoms in group 13 (the JZ4 ligand) that are named either OAB or H12, returning the two atoms that meet these criteria. This group is saved in the index file as group 23. The next selection returns a single atom, the OE1 atom of protein residue 102 (Gln102) from group 1 (Protein), which is saved as group 24. The final command merges the two new groups into one group consisting of three atoms, which is necessary for calculating the angle formed by these atoms. Next, invoke the \texttt{angle} program:
+
+\begin{lstlisting}
+$ gmx angle -f md_0_10_center.xtc -n index.ndx -ov angle.xvg  
+\end{lstlisting}
+%
+The \texttt{angle} program also prints useful statistics to the terminal:
+
+\begin{lstlisting}
+Found points in the range from 1 to 123 (max 180)
+ < angle >  = 23.3454
+< angle^2 > = 632.498
+Std. Dev.   = 9.35373
+\end{lstlisting}
+%
+The average value is 23 $\pm$ 9\textdegree, which is somewhat unexpected; if the angle is defined as OAB - H12 - OE1 and the hydrogen bond is maintained (as it appears to from visual inspection of the trajectory), why is it that the value is so low and not somewhat closer to 180\textdegree? Inspect the contents of \texttt{index.ndx} and group 25 will contain:
+
+\begin{lstlisting}
+[ JZ4_&_OAB_H12_Protein_&_r_102_&_OE1 ]
+1616 2624 2636
+\end{lstlisting}
+
+GROMACS intrinsically sorts the atom indices in the groups, so the actual angle that is returned corresponds to OE1 - OAB - H12, more akin to the typical hydrogen bonding definition. The output from the \texttt{angle} program thus corresponds to the degree to which the hydrogen-bonded atoms deviate from linearity. The average value (23 $\pm$ 9\textdegree) matches the expectation for a hydrogen bond ($\le$ 30\textdegree). If one were to want to obtain an actual time series of the OAB - H12 - OE1 angle, the atoms in the index group would have to be reordered as such:
+
+\begin{lstlisting}
+[ JZ4_&_OAB_H12_Protein_&_r_102_&_OE1 ]
+2624 2636 1616
+\end{lstlisting}
+%
+Using this index group as an input into the \texttt{angle} program yields an average value of 147 $\pm$ 11\textdegree.
+
+Another analysis that is commonly performed in simulations of protein-ligand complexes is the ligand RMSD, to determine how much the binding pose changed over time. This quantity can be useful in assessing the stability of the interactions between the ligand and the protein, and also as an indicator of the quality of the ligand topology. That is, a poor-quality topology will not preserve the native interactions and will often lead to distorted binding poses or even dissociation. Begin by creating a new index group containing only the heavy atoms of 2-propylphenol:
+
+\begin{lstlisting}
+$ gmx make_ndx -f em.gro -n index.ndx
+> 13 & ! a H*
+> name 26 JZ4_Heavy
+> q
+\end{lstlisting}
+%
+This selection should look familiar, as it is the same syntax used to create an index group before generating the ligand position restraint topology. Why, then, is it necessary to recreate it here? The restraint topology requires atom numbers that match those of the \texttt{[moleculetype]} definition, which run from 1 to the number of atoms in the molecule (in this case, 22). These atom numbers differ from the global atom numbers in the coordinate file of the system. That is, in \texttt{posre\_jz4.itp}, the only valid numbers are from 1-22, but the atom numbers of JZ4 in the final system are from 2615-2636, because they appear after the protein (atoms 1-2614). After creating this index group, execute the \texttt{rms} program. Choose "Backbone" for least-squares fitting and "JZ4\_Heavy" for the group for RMSD calculation. Doing so computes the RMSD of the ligand in the context of overall fitting of the protein's motion, that is, how much the ligand has moved relative to the protein.
+
+\begin{lstlisting}
+$ gmx rms -s em.tpr -f md_0_10_center.xtc -tu ns -o rmsd_jz4.xvg -n index.ndx
+\end{lstlisting}
+%
+Note the use of \texttt{em.tpr} as the reference structure. The RMSD is thus being computed using the energy-minimized crystal coordinates as reference. Over the 10-ns simulation, the ligand RMSD plateaus at a value of \textasciitilde0.1 nm (1 \AA). Such a low value indicates that the binding pose was very stable, at least on this short time scale.
+
+The final analysis that will be performed is an interaction energy calculation. GROMACS provides the ability to compute the short-range nonbonded interaction energy between any groups of atoms. Note that this quantity may not have real, physical meaning if the force field was not parametrized to do so. As the CHARMM force field includes explicit targeting of QM water interactions with all species, it is intrinsically balanced in such a way that interaction energy can be a useful metric. This quantity should not, however, be confused with a "binding energy" or a free energy of any sort. It is simply a decomposition of the potential energy of the system, including only nonbonded terms between the selected atom groups.
+
+Interaction energies can be computed using \texttt{mdrun} in conjunction with its \texttt{-rerun} option. Create a new \texttt{.mdp} file ({\em e.g.} a copy of \texttt{md.mdp}) that now includes the line:
+
+\begin{lstlisting}
+energygrps              = Protein JZ4
+\end{lstlisting}
+
+Use \texttt{grompp} to create a new \texttt{.tpr} file, and subsequently recalculate the energies of the configurations in the trajectory with \texttt{mdrun -rerun}. Note that the \texttt{mdrun} command instructs GROMACS to compute the energies using only CPU hardware. Doing so is required because multiple energy groups are not supported on GPU.
+
+\begin{lstlisting}
+$ gmx grompp -f ie.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o ie.tpr
+
+$ gmx mdrun -deffnm ie -rerun md_0_10.xtc -nb cpu
+\end{lstlisting}
+
+Extract the interaction energy components, Coul-SR:Protein-JZ4 (group 51) and LJ-SR:Protein-JZ4 (group 52) using the \texttt{energy} program:
+
+\begin{lstlisting}
+$ gmx energy -f ie.edr -o interaction_energy.xvg
+\end{lstlisting}
+%
+The output should indicate that the short-range Coulombic interaction energy is -20.5 $\pm$ 7.4 kJ mol\textsuperscript{$-$1} and the short-range Lennard-Jones interaction energy is -99.1 $\pm$ 7.2 kJ mol\textsuperscript{$-$1}. The decomposition of these terms, regardless of force field, has no physical meaning. Only the total interaction energy may be considered a useful metric, again only if the force field has been parametrized in such a way that makes this quantity useful. Thus, the total interaction energy between 2-propylphenol and T4 lysozyme over the 10-ns MD simulation performed here is -119.6 $\pm$ 10.3 kJ mol\textsuperscript{$-$1}.
+
+\subsubsection{Summary and Review of Objectives} \label{prot_lig_summary}
+
+This tutorial has guided the user through the process of preparing a protein-ligand system for an MD simulation. The preparation of a reliable ligand topology is the most challenging aspect of the process, and in this example, the  CGenFF web server was used to prepare a topology for 2-propylphenol that is compatible with the CHARMM36 protein force field. After adding hydrogen atoms to the crystal coordinates of the ligand, producing a \texttt{.mol2} file defining bonded connectivity and primitive atom types, the topology was produced in CHARMM format and subsequently converted to yield a GROMACS-compatible topology.  To review, the learning objectives of the tutorial are:
+
+\begin{enumerate}
+	\item Produce a ligand topology outside of GROMACS and incorporate it into a system topology
+	\item Determine how to verify if a ligand topology is suitable for further simulation
+	\item Perform analysis of interactions between a protein and a ligand
+\end{enumerate}
+
+Each of these objectives was addressed in Section~\ref{complex_lig_top}. Other new concepts introduced in this tutorial were those related to special considerations for thermostatting groups (merging the protein and ligand groups), re-wrapping of coordinates when using a rhombic dodecahedral unit cell shape, generating index groups for ligand-specific analysis, and calculating interaction energies after the simulation has finished.
+
+
+
+%%%%%%%%% ADVANCED: VDW TRANSFORMATION OF METHANE %%%%%%%%%
+\subsection{Tutorial 4: Free Energy of Solvation} \label{fes}
+
+\begin{figure}[H]
+\centering
+\includegraphics{free_energy_methane_water}
+\caption{A single methane molecule (CH\textsubscript{4}) in water.}
+\label{free_energy_methane_water_fig}
+\end{figure}
+
+In Section~\ref{pmf}, the concept of computing a free energy difference along a reaction coordinate was introduced. There is another type of free energy calculation frequently employed in MD simulations, in which a set of atoms is transformed in some manner from one state to another (typically denoted A and B), yielding some difference in free energy that relates to this change in topology. Common applications include mutating one small molecule to another and computing a $\Delta\Delta$G of binding (a relative free energy difference) or by turning off all interactions between some molecule and the remaining system, yielding $\Delta$G of solvation in that system (an absolute free energy difference). The free energy difference between two states, A and B, was originally defined by Zwanzig~\cite{Zwanzig1954}:
+
+\begin{equation} \label{fep_eq}
+\Delta G(A \longrightarrow B) = G_B - G_A = -k_B T \left \langle exp \left(-\frac{E_B - E_A}{k_B T}\right)\right \rangle_A
+\end{equation}
+
+That is, for every configuration generated in state A, the energy of the system is also evaluated in state B, from which the free energy difference, $\Delta$G, is calculated. This approach is called free energy perturbation (FEP). The drawback to the approach is that convergence is difficult unless the difference between the two states is small. For "mutation" of one molecule into another, or to transform a molecule from a fully interacting to a non-interacting state, this approach may fail to converge. In practice, such a calculation of a free energy difference is actually a series of MD simulations, in which the molecule of interest progressively has its topology changed from state A to state B as a function of a discrete coupling factor, $\lambda$. In these simulations, the Hamiltonian $H(\mathbf{r}, \mathbf{p})$ in terms of atomic coordinates ($\mathbf{r}$) and momenta ($\mathbf{p}$) is extended to include $\lambda$, {\em e.g.} $H(\mathbf{r}, \mathbf{p}; \lambda)$. For a given value of $\lambda$ (which takes values from 0 to 1, indicating fully in the A-state and fully in the B-state, respectively), the Hamiltonian of the system is expressed as:
+
+\begin{equation} \label{fes_hamiltonian_eq}
+H(\mathbf{r},\mathbf{p};\lambda) = (1 - \lambda) H^A(\mathbf{r},\mathbf{p}) + \lambda H^B(\mathbf{r},\mathbf{p})
+\end{equation}
+
+This approach to determining free energy differences is often called an "alchemical transformation," as it involves unphysical intermediates. For example, when determining $\Delta$G of solvation, state A ($\lambda = 0$) would correspond to the solute in a non-interacting state. In other words, the molecule experiences intramolecular interactions but no intermolecular interactions ({\em e.g.} solute-solvent) such that it samples the ideal gas state. State B ($\lambda = 1$) would then correspond to the fully interacting state, in which all nonbonded interactions are at full strength. Setting $\lambda = 0.5$ indicates that intermolecular interactions are at half strength, but how does one define a molecule that is halfway interacting with its surrounding environment? These are unphysical intermediates. However, since $\Delta$G is a state function, it does not matter what path is taken to arrive at the final answer, and the purpose of these intermediates is to define changes in energy that are small enough that they allow for convergence of the calculation.
+
+Another method used to evaluate free energy differences is thermodynamic integration (TI), wherein the same $\lambda$-dependent transformation is carried out, and the quantity $\frac{\partial H(\lambda)}{\partial \lambda}$ is stored. After the simulations are finished, the integral is taken over the entire $\lambda$ range:
+
+\begin{equation} \label{ti_eq}
+\Delta G = \int_{0}^{1} \left\langle \frac{\partial H(\lambda)}{\partial \lambda} \right\rangle d\lambda
+\end{equation}
+
+The method used for computing $\Delta$G in this tutorial is the Bennett Acceptance Ratio (BAR)~\cite{Bennett1976}. Bennett originally formulated this method for Monte Carlo (MC) simulations, however it is easily extended to MD simulations, which are essentially MC simulations in which all trial moves are accepted. The BAR method is based on an assumption that states A and B share the same microstates, though the energies of these microstates are different. Bennett subsequently demonstrated that for functions satisfying detailed balance, one can compute the free energy change between states from the Metropolis function in the simplest case:
+
+\begin{equation} \label{metropolis_eq}
+M(x) \equiv min(e^{-x}, 1)
+\end{equation}
+%
+such that
+
+\begin{equation} \label{bar_simplest_eq}
+e^{-\beta\Delta G} = \frac{\left\langle M\left(\beta\left(U_B - U_A\right)\right)\right\rangle_A}{\left\langle M\left(\beta\left(U_A - U_B\right)\right)\right\rangle_B}
+\end{equation}
+%
+where $\beta = (k_B T)^{-1}$ and the angle brackets denote the ensemble averages over the configurations in states A and B.
+
+Bennett demonstrates that in the more general case, in which some function, $f$, is used that includes some unknown free energy offset, $C$:
+
+\begin{equation} \label{bar_general_eq}
+e^{-\beta(\Delta G - C)} = \frac{\left\langle f\left(\beta\left(U_B - U_A - C\right)\right)\right\rangle_A}{\left\langle f\left(\beta\left(U_A - U_B + C\right)\right)\right\rangle_B}
+\end{equation}
+%
+that the free energy can be estimated with minimum error when the chosen function is the Fermi function:
+
+\begin{equation} \label{bar_fermi_eq}
+f(x) = \frac{1}{1 + e^x}
+\end{equation}
+%
+which, when used in Equation~\ref{bar_general_eq}, and solving iteratively after an initial estimate for $C$, yields:
+
+\begin{equation} \label{bar_final_eq}
+\Delta G \approx C
+\end{equation}
+
+This tutorial (available online at \tutorialfes) will guide the user through the calculation of the free energy change associated with removing van der Waals interactions of methane with water (Figure~\ref{free_energy_methane_water_fig}) using the BAR algorithm, implemented in GROMACS as the \texttt{bar} program. This quantity is part of the total transformation of methane that would be used to compute the complete free energy of solvation, $\Delta$G\textsubscript{solv}. This quantity has been rigorously calculated by Shirts et al. using the TI method~\cite{Shirts2003}.
+
+\subsubsection{System Contents} \label{fes_top}
+
+The system considered here contains a single methane (CH\textsubscript4) molecule solvated in 596 water molecules (Figure~\ref{free_energy_methane_water_fig}). The OPLS-AA force field~\cite{Kaminski2001} is used to describe methane and TIP3P~\cite{Jorgensen1983} is the water model. The coordinate and topology files for the system are available from the online version of this tutorial. A brief description of the topology contents is warranted here. The following describes the methane \texttt{[moleculetype]}:
+
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+[ moleculetype ]
+; Name                       nrexcl
+Methane                      3
+
+[ atoms ]
+; nr      type resnr residue atom cgnr  charge    mass
+   1  opls_138     1   ALAB    CB    1   0.000  12.011   
+   2  opls_140     1   ALAB   HB1    2   0.000   1.008   
+   3  opls_140     1   ALAB   HB2    3   0.000   1.008   
+   4  opls_140     1   ALAB   HB3    4   0.000   1.008   
+   5  opls_140     1   ALAB   HB4    5   0.000   1.008
+\end{lstlisting}
+
+The residue is named "ALAB," from the $\beta$-carbon of alanine, for which methane serves as a model compound. All of the charges on the atoms are set to zero, though strictly speaking, it is not necessary to do so. This tutorial will only consider the van der Waals transformation (that is, turning off Lennard-Jones interactions as a function of $\lambda$). In past versions of GROMACS (e.g. 4.0 and earlier), to do such a transformation would have required a topology with the form shown here, so that Coulombic interactions are not included. As will be explained below, charges can be present in the topology but also ignored. Should the user wish to perform a full transformation to calculate $\Delta$G\textsubscript{solv}, appropriate charges for all H atoms are +0.060 and -0.240 for the C atom. The topology shown here corresponds to the A-state of the molecule, such that it is fully interacting with its environment. It is also not necessary to specify a B-state in the topology (as was the case in past GROMACS versions, as well) since the transformation of nonbonded terms is controlled entirely in the \texttt{.mdp} file. A relative free energy calculation, in which one molecule is "mutated" to another, does require explicit B-state parameters (atom types and charges) to be set. Such a calculation is beyond the scope of this tutorial.
+
+\subsubsection{Free Energy Settings} \label{fes_settings}
+
+Every \texttt{.mdp} file used in this tutorial has a section with the following form:
+
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+free_energy              = yes
+init_lambda_state        = 0
+delta_lambda             = 0
+calc_lambda_neighbors    = 1
+couple-moltype           = Methane
+couple-lambda0           = vdw
+couple-lambda1           = none
+couple-intramol          = no
+vdw_lambdas              = 0.00 0.05 0.10 0.15 ...
+coul_lambdas             = 0.00 0.00 0.00 0.00 ...
+bonded_lambdas           = 0.00 0.00 0.00 0.00 ...
+restraint_lambdas        = 0.00 0.00 0.00 0.00 ...
+mass_lambdas             = 0.00 0.00 0.00 0.00 ...
+temperature_lambdas      = 0.00 0.00 0.00 0.00 ...
+sc-alpha                 = 0.5
+sc-coul                  = no
+sc-power                 = 1
+sc-sigma                 = 0.3
+nstdhdl                  = 10
+\end{lstlisting}
+
+The \texttt{free\_energy} keyword instructs \texttt{grompp} to read the relevant free energy settings. If this keyword is set to \texttt{no}, then all the options shown are ignored. The \texttt{init\_lambda\_state} determines the value of $\lambda$, which is actually a vector, as explained below. The \texttt{delta\_lambda} keyword allows $\lambda$ to change as a function of time, in what are called "slow-growth" free energy calculations. Such a feature will not be used in this tutorial. The \texttt{calc\_lambda\_neighbors} keyword will instruct \texttt{mdrun} on how many neighboring values of $\lambda$ it should evaluate the energy of the system. Recall from Equation~\ref{bar_general_eq} that the energies of A- and B-states for a given configuration are needed. It is also possible to use multiple neighboring states (discussed below). For standard BAR, only a single neighbor needs its energy evaluated under the B-state topology.
+
+The \texttt{couple-moltype} specifies the \texttt{[moleculetype]} name that will have its topology transformed as a function of $\lambda$. The \texttt{couple-lambda0} and \texttt{couple-lambda1} keywords specify which interactions are on in the A- and B-states, respectively. Valid options for these keywords are \texttt{vdw-q} (meaning both vdW and Coulombic interactions are fully on), \texttt{vdw} (only vdW), \texttt{q} (only Coulombic), and \texttt{none} (no intermolecular interactions; the coupled \texttt{[moleculetype]} is non-interacting, {\em i.e.} in the ideal gas state). The \texttt{couple-intramol} setting determines whether or not intramolecular nonbonded interactions are to be transformed as a function of $\lambda$. For small molecules, this option is typically set to \texttt{no} such that the fully transformed state still corresponds to the ideal gas state. Larger molecules may become trapped in a narrowly defined conformational ensemble, requiring softening of intramolecular nonbonded interactions, in which case \texttt{couple-moltype} might be set to \texttt{yes}. Methane has no intramolecular nonbonded interactions, so this setting will not affect the outcome, but for larger molecules it may be relevant.
+
+From these options, the transformation of methane is now defined. The A-state corresponds to a molecule that interacts with water only via vdW interactions (\texttt{couple-moletype0 = vdw}). This setting is why it is irrelevant if charges are defined in the topology; even if present, they will be ignored. In the B-state, methane is non-interacting (\texttt{couple-moltype1 = none}), so the $\Delta$G calculated in this series of simulations will correspond to the vdW contribution to $-\Delta$G\textsubscript{solv}. $\Delta$G\textsubscript{solv} is formally defined as the free energy change associated with the introduction of a solute into solvent, which would be specified by inverting the definitions of the A- and B-states defined here.
+
+The next set of options define the $\lambda$ vector for nonbonded interactions (vdW and Coulombic) as well as bonded terms and restraints, masses of atoms, and the temperature of the system. Scaling temperatures is only relevant for simulated tempering~\cite{Marinari1992,Geyer1995}, which will not be discussed in this tutorial. These settings are used to define the $\lambda$ vector, which is indexed with the \texttt{init\_lambda\_state} keyword. Vectors are zero-based indices, so $\lambda$[0] = (0.00, 0.00, 0.00, 0.00, 0.00, 0.00), $\lambda$[1] = (0.05, 0.00, 0.00, 0.00, 0.00, 0.00) and so on, corresponding to each column of values in the \texttt{*\_lambdas} arrays. Though charges are not being transformed in this example, it is important to note that in such a case, charges should not be present on atoms that have no vdW terms to avoid numerical instability. That is, charges should only ever be "on" for atoms that have full vdW interactions. For this reason, setting \texttt{couple-moltype* = q} is very uncommon.
+
+The options starting with \texttt{sc-} define parameters associated with "soft-core" modification of potentials~\cite{Beutler1994}. As $\lambda$ increasingly defines atoms with no vdW radii or very weak charges (in the absence of vdW terms), it is possible for atoms to overlap, leading to a numerical singularity (infinite force). While all $\lambda$-dependent transformations inherently sample unphysical states, a singularity makes calculation of the forces impossible and therefore must be prevented. To circumvent this problem, nonbonded potentials can be shifted, as shown in Equation~\ref{sc_eq} for the Lennard-Jones form of vdW interactions: 
+\begin{equation} \label{sc_eq}
+\footnotesize
+U_{ij}^{LJ} (r_{ij};\lambda) = 4\epsilon\lambda^p\left(\left[\alpha(1-\lambda)^p + \left(\frac{r_{ij}}{\sigma_{ij}}\right)^6\right]^{-2} - \left[\alpha(1-\lambda)^p + \left(\frac{r_{ij}}{\sigma_{ij}}\right)^6\right]^{-1}\right)
+\end{equation}
+%
+The \texttt{sc-alpha} keyword sets the value of $\alpha$ in Equation~\ref{sc_eq}. The \texttt{sc-power} option sets the value of $p$; here, this parameter is set to 1 to indicate a linear dependence on $\lambda$, which has been shown to be a robust approach in conjunction with $\alpha = 0.5$~\cite{Pitera2002,Steinbrecher2007,Shirts2005}. The \texttt{sc-sigma} keyword specifies a value of $\sigma$ for atoms that have force field parameter values of $\sigma$ less than this specified value. This setting is important for atoms like hydrogen, which often do not have their own Lennard-Jones parameters. The final option, \texttt{sc-coul}, is not relevant here as charges are not being transformed. Typically, soft-core modifications are not applied to Coulombic interactions, if the transformation is being carried out on atoms that still have vdW interactions (the recommended approach). However, if one is transforming charges on atoms that do not have vdW interactions, the soft-core modification is recommended to avoid the same numerical singularity problems described above.
+
+The last setting in this section of the \texttt{.mdp} file, \texttt{nstdhdl}, simply specifies the interval (in number of time steps) for writing the values of $\frac{\partial H(\lambda)}{\partial \lambda}$ to the output file.
+
+\subsubsection{Workflow} \label{fes_workflow}
+
+The calculation of $\Delta$G for removing vdW interactions between methane and water will be carried out in 21 individual simulations, one for each of the $\lambda$ vectors defined in the \texttt{.mdp} files. Preceding each production simulation, the system will be energy-minimized, then equilibrated under an $NVT$ and then an $NPT$ ensemble for 100 ps each. Following these preparation steps, the production MD simulations (during which data are collected) will be carried out for 1 ns.
+
+In this example, the values of $\lambda$ are spaced equally from 0 to 1, thus an interval of 0.05. It is typical to cluster values of $\lambda$ towards each of the end states, using a finer spacing to better resolve the energies of the fully and non-interacting states. For simplicity and in the interest of time, equal spacing is used here. As will be shown below, in this very simple case, such a $\lambda$ spacing is adequate, but this may not always be the case.
+
+The online tutorial provides a Bash script (\texttt{job.sh}) to run each of these jobs in a loop, though it is not necessary to do so. As all of the simulations are independent, it is possible to run them all simultaneously if preferred. All of the \texttt{.mdp} settings should be familiar by now, though it is important to note the use of the \texttt{sd} integrator (for "stochastic dynamics," more commonly called "Langevin dynamics"). A random frictional force is applied to all the atoms with an inverse friction coefficient specified by \texttt{tau\_t}, which has been set to 1.0 ps\textsuperscript{$-$1}, to avoid over-damping of water and subsequently artificially impacting sampling. Do not use a value smaller than 1.0 here.
+
+\subsubsection{Analysis} \label{fes_ana}
+
+Collect all of the output \texttt{md*.xvg} files from the production MD runs into one directory and execute the \texttt{bar} program:
+
+\begin{lstlisting}
+$ gmx bar -f md*.xvg -o -oi
+\end{lstlisting}
+%
+The \texttt{bar} program prints free energy differences for each $\lambda$ window to the terminal (including entropy in each window, all in units of kT). At the end of the printed information will be the final results, in kJ mol\textsuperscript{$-$1}:
+
+\begin{lstlisting}
+Final results in kJ/mol:
+
+point      0 -      1,   DG  0.19 +/-  0.00
+point      1 -      2,   DG  0.17 +/-  0.01
+point      2 -      3,   DG  0.14 +/-  0.00
+point      3 -      4,   DG  0.09 +/-  0.01
+point      4 -      5,   DG  0.06 +/-  0.00
+point      5 -      6,   DG  0.01 +/-  0.01
+point      6 -      7,   DG -0.06 +/-  0.01
+point      7 -      8,   DG -0.14 +/-  0.02
+point      8 -      9,   DG -0.23 +/-  0.01
+point      9 -     10,   DG -0.35 +/-  0.01
+point     10 -     11,   DG -0.53 +/-  0.01
+point     11 -     12,   DG -0.77 +/-  0.03
+point     12 -     13,   DG -1.12 +/-  0.03
+point     13 -     14,   DG -1.46 +/-  0.02
+point     14 -     15,   DG -1.53 +/-  0.04
+point     15 -     16,   DG -1.35 +/-  0.02
+point     16 -     17,   DG -1.04 +/-  0.01
+point     17 -     18,   DG -0.70 +/-  0.01
+point     18 -     19,   DG -0.40 +/-  0.00
+point     19 -     20,   DG -0.13 +/-  0.00
+
+total      0 -     20,   DG -9.13 +/-  0.09
+\end{lstlisting}
+
+The transformation carried out here was the disappearance of vdW terms in methane, the opposite of the vdW contribution to the solvation free energy. Converting the obtained result to kcal mol\textsuperscript{$-$1} and inverting the sign (assuming reversibility of this process), the final result is 2.18 $\pm$ 0.02 kcal mol\textsuperscript{$-$1}, in good agreement with the value obtained by Shirts et al. of 2.21 $\pm$ 0.01 kcal mol\textsuperscript{$-$1}~\cite{Shirts2003}. Small differences can be attributed to different software versions, cutoff schemes, integration algorithms, different $\lambda$ spacing, and thermostats. However, the close agreement between these two results indicates that the present approach is robust and can reproduce the known quantity sufficiently.
+
+The \texttt{-o} and \texttt{-oi} arguments produce \texttt{bar.xvg} and \texttt{barint.xvg}, the free energy differences as a function of $\lambda$ state and the integral of these free energy differences (which gives the total $\Delta$G for the transformation). It is also possible to output histograms of the free energy differences, but this output will not be discussed in this tutorial. The plot of $\Delta$G as a function of $\lambda$ is shown in Figure~\ref{free_energy_plot_bar_fig}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics{free_energy_plot_bar}
+\caption{The $\Delta$G values for each $\lambda$ window, from the BAR algorithm.}
+\label{free_energy_plot_bar_fig}
+\end{figure}
+
+Note that the default $x$-axis will be integers, corresponding to the indices of the $\lambda$ vector. These values have been replaced in Figure~\ref{free_energy_plot_bar_fig} with the specific values of \texttt{vdw-lambdas} in each of these $\lambda$ vectors. Recall that no other energy terms were transformed as a function of $\lambda$, so the free energy changes are all one-dimensional, and referred to simply as $\lambda$\textsubscript{vdW} for clarity. Each value is plotted between two discrete values of $\lambda$. The BAR algorithm evaluates free energy differences between the neighboring $\lambda$ values, so the $\Delta$G values correspond to the free energy difference of a given configuration evaluated under the A- and B-state topologies (calculated every \texttt{nstdhdl} steps, see Section~\ref{fes_settings}). The plotted BAR output corresponds to $\Delta$G values between $\lambda = 0$ and $\lambda = 0.05$, $\lambda = 0.05$ and $\lambda = 0.1$, and so on.
+
+The integral of these values is plotted in Figure~\ref{free_energy_plot_barint_fig}, to accumulate $\Delta$G as a function of $\lambda$. The final value is -3.69 k\textsubscript{B}T, or -9.14 kJ mol\textsuperscript{$-$1}, since k\textsubscript{B}T = 2.478 kJ mol\textsuperscript{$-$1} at 298 K. This value agrees with the value previously printed to the terminal by the \texttt{bar} program (-9.13 kJ mol\textsuperscript{$-$1}). The values are not exactly the same because the calculation done by the \texttt{bar} program is carried out with greater precision than using just two, rounded decimal places printed to the screen.
+
+\begin{figure}[h!]
+\centering
+\includegraphics{free_energy_plot_barint}
+\caption{The cumulative $\Delta$G value (blue), plotted along with $\Delta$G values from each $\lambda$ window (black), from the BAR algorithm.}
+\label{free_energy_plot_barint_fig}
+\end{figure}
+
+\subsubsection{More Advanced Free Energy Calculations} \label{fes_advanced}
+
+Common applications of free energy calculations via MD simulation include full solvation free energies and binding free energies. To obtain $\Delta$G\textsubscript{solv} for methane, the user would simply include charges in the system topology and set up a series of \texttt{coul-lambdas} in the \texttt{.mdp} files. The \texttt{bar} program can be then called in the same manner to obtain the total value of $\Delta$G\textsubscript{solv}.
+
+Computing a binding free energy between a ligand and a protein is beyond the scope of this tutorial, but interested readers are directed to \url{http://www.alchemistry.org/wiki/Main_Page}, which has all the information necessary to perform these calculations. The most challenging aspect of these kinds of calculations is the need to restrain the ligand as it is slowly transformed. Non- or weakly interacting states of the ligand will begin to diffuse through the protein and sample totally unphysical regions of the system, inhibiting convergence of the calculations. To circumvent this problem, distance and orientational restraints can be imposed on the ligand as a function of $\lambda$. The energetic contributions of the restraints to the free energy can be corrected analytically after the simulations. An example of such a process is described by Jo et al. in their implementation of the CHARMM-GUI Ligand Binder~\cite{Jo2012}. See also references therein. The difference between the computed free energy difference from transforming the ligand in the binding site of the protein ($\Delta$G\textsubscript{complexation}) and the solvation free energy of the ligand ($\Delta$G\textsubscript{solv}) yields the binding free energy, $\Delta$G\textsubscript{bind}.
+
+\subsubsection{Summary and Review of Objectives} \label{fes_summary}
+
+This tutorial has guided the user through the process of calculating the free energy change associated with turning off vdW interactions between methane and water. The free energy change was computed with the BAR algorithm~\cite{Bennett1976}. To review, the learning objectives of the tutorial are:
+
+\begin{enumerate}
+	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
+	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
+\end{enumerate}
+
+The user was introduced to settings related to free energy in Section~\ref{fes_settings} and analysis using BAR was performed in section~\ref{fes_ana}. Several output files were plotted and their contents discussed. Interested readers may wish to refer to the Multistate BAR (MBAR) method~\cite{Shirts2008}, in which free energy differences are computed from all states. A Python implementation for MBAR is available from \url{https://github.com/choderalab/pymbar} and is fully compatible with GROMACS output. The user simply needs to increase the value of \texttt{calc\_lambda\_neighbors} in the \texttt{.mdp} file to evaluate free energy differences among all $\lambda$ states.
+
+
+%%%%%%%%% ADVANCED: FREE ENERGY OF SOLVATION %%%%%%%%%
+
+
+%%%%%%%%% ADVANCED: PROTEIN-LIGAND BINDING FREE ENERGY %%%%%%%%%
+
+
+%%%%%%%%% ADVANCED: UMBRELLA SAMPLING %%%%%%%%%
+\subsection{Tutorial 7: Umbrella Sampling} \label{pmf}
 
 \begin{figure}[h]
 \centering
@@ -1451,8 +2125,8 @@ To conclude, it is again important to emphasize that the system simulated here i
 
 
 
-%%%%%%%%% TUTORIAL 4 %%%%%%%%%
-\subsection{Tutorial 4: Biphasic Systems} \label{biphasic}
+%%%%%%%%% ADVANCED: BIPHASIC %%%%%%%%%
+\subsection{Tutorial 8: Biphasic Systems} \label{biphasic}
 
 \begin{figure}[h]
 \centering
@@ -1561,613 +2235,8 @@ This tutorial has guided the user through the simple construction of a biphasic 
 The tutorial demonstrated how an initial system of non-aqueous liquid can be built by two different methods, and subsequently how the equilibrated box can have its relative position manipulated within a new, larger unit cell. Additional tips and tricks have been provided to demonstrate how other species can easily be added to the biphasic system, to allow for studies of interfacial dynamics and partitioning.
 
 
-
-%%%%%%%%% TUTORIAL 5 %%%%%%%%%
-\subsection{Tutorial 5: Protein-Ligand Complex} \label{prot_lig}
-
-\begin{figure}[h]
-\centering
-\includegraphics{lysozyme_complex_3htb}
-\caption{Crystal structure of T4 lysozyme L99A/M102Q with bound 2-propylphenol ligand, taken from PDB 3HTB~\cite{Boyce2009}.}
-\label{lyso_complex_3htb_fig}
-\end{figure}
-
-Simulating proteins in complex with small-molecule ligands or inhibitors (Figure~\ref{lyso_complex_3htb_fig}) is an important part of understanding enzyme catalysis, drug design, and allostery. These simulations present a challenge in that the ligand topology is not likely to have been explicitly derived. Force field parametrization is an advanced topic, one that typically requires expert training. To decrease the barrier to performing these important simulations, many "general" or "drug-like" force fields exist, such as the General AMBER Force Field (GAFF)~\cite{Wang2004}, CHARMM General Force Field (CGenFF)~\cite{Vanommeslaeghe2010}, and OPLS3~\cite{Harder2016}, which have well-known methodologies, parameter assignment protocols, and web servers that can generate topologies for arbitrary molecules.
-
-In this tutorial (available online at \tutorialcomplex), the protein topology will be generated with the CHARMM36m force field~\cite{Huang2016}, a recent revision of the CHARMM36 force field~\cite{Best2012}. The ligand topology will be generated with CGenFF via its web server (\url{https://cgenff.paramchem.org/}). Download the CHARMM36m force field in GROMACS format from the MacKerell lab website (\url{http://mackerell.umaryland.edu/charmm_ff.shtml#gromacs}), as well as the Python script called \texttt{cgenff\_charmm2gmx.py}. Extract the force field archive in the working directory:
-
-\begin{lstlisting}
-$ tar -zxvf charmm36-mar2019.ff.tgz
-\end{lstlisting}
-
-\subsubsection{Protein Topology Preparation} \label{complex_top}
-
-Download the coordinates for T4 lysozyme L99A/M102Q from PDB entry 3HTB. Remove crystal waters and the phosphate (PO4) and $\beta$-mercaptoethanol (BME) co-solvents from the coordinate file. The online version of the tutorial provides a file called \texttt{3HTB\_clean.pdb} that has already removed the unnecessary atoms.
-
-The GROMACS program \texttt{pdb2gmx} can only generate topologies for species it recognizes, {\em e.g.} those encoded in residue topology (\texttt{.rtp}) files. That means non-standard species like ligands will cause the program to return a fatal error. Thus, \texttt{pdb2gmx} cannot be used to generate a topology for 2-propylphenol. It will be parametrized separately. For now, remove the atoms corresponding to the ligand (residue name JZ4) from the PDB file and save them in a separate file to be used later:
-
-\begin{lstlisting}
-$ grep JZ4 3HTB_clean.pdb > jz4.pdb
-\end{lstlisting}
-%
-After saving these coordinates, delete the JZ4 coordinate lines from \texttt{3HTB\_clean.pdb} and generate the protein topology with \texttt{pdb2gmx}:
-
-\begin{lstlisting}
-$ gmx pdb2gmx -f 3HTB_clean.pdb -o 3HTB_processed.gro
-\end{lstlisting}
-%
-When prompted, choose the CHARMM36 force field (the first entry in the list, "From current directory") and the default water model, TIP3P modified for use with CHARMM.
-
-\subsubsection{Ligand Topology Preparation} \label{complex_lig_top}
-
-The principal challenge in performing a protein-ligand simulation is generating a topology for the ligand. Most biomolecular force fields include parameters for common cofactors (heme, ATP, etc.) but do not have existing parameters for every molecule that may be of interest in a simulation. The general force fields listed above seek to remedy this situation, by establishing highly transferable atom types and parameters that can be assigned to arbitrary molecules according to established rules. Doing so removes the burden of manual parametrization from the user, as these procedures often require expert training. General force fields are not necessarily perfect, and there are instances for which manual refinement or reparametrization may be necessary, but they provide a reasonable starting point for these efforts.
-
-In this tutorial, the CGenFF parameter set will be used to generate the topology for the 2-propylphenol ligand (Figure~\ref{jz4_fig}). CGenFF is both a parameter set (compatible with the CHARMM force field) and a program that builds small-molecule topologies according to existing rules~\cite{Vanommeslaeghe2012a,Vanommeslaeghe2012b}. The CGenFF program can be accessed via a web server (\url{https://cgenff.paramchem.org/}), which will be used in this tutorial. The input to the CGenFF program is a \texttt{.mol2} file, which contains atom names, coordinates, Tripos atom types, charges, and bonded connectivity. CGenFF uses these atom types and charges to perform its own parametrization.
-
-\begin{figure}[h!]
-\centering
-\includegraphics{jz4}
-\caption{The structure of 2-propylphenol, with hydrogen atoms added. Each atom is labeled by name.}
-\label{jz4_fig}
-\end{figure}
-
-To prepare the \texttt{.mol2} file, download and install the Avogadro molecular editor (\url{https://avogadro.cc/})~\cite{Hanwell2012}. Open \texttt{jz4.pdb} within Avogadro, and from the "Build" menu, choose "Add Hydrogens." Save a \texttt{.mol2} file called \texttt{jz4.mol2}. Several corrections to this file are necessary. The second line of the file, under the \texttt{@<TRIPOS>MOLECULE} heading, reads simply "*****" in place of a residue name. Replace this text with "JZ4." The hydrogen atoms that were added are assigned a different residue name and number, which must be manually corrected. Every instance of "JZ167" or "UNL1" should be replaced with "JZ4," and every atom should have a residue number of 1. The corrected \texttt{jz4.mol2} file is provided in the online version of the tutorial.
-
-This file is syntactically valid, but still needs modification. The bonds in the \texttt{@<TRIPOS>BONDS} section do not appear in ascending numerical order, which will cause problems for CGenFF. To correct this bond listing, use the \texttt{sort\_mol2\_bonds.pl} script provided with the online tutorial:
-
-\begin{lstlisting}
-$ perl sort_mol2_bonds.pl jz4.mo2 jz4_fix.mol2
-\end{lstlisting}
-%
-The final, fully corrected file \texttt{jz4\_fix.mol2} is what will be used as input to the CGenFF server.
-
-The \texttt{jz4\_fix.mol2} will next be uploaded to the CGenFF web server. The use of this server is free for academic purposes, though user registration is required. Once \texttt{jz4\_fix.mol2} has been uploaded, the server will return a topology and parameter file in a CHARMM-formatted stream file (\texttt{jz4.str}). This file should be downloaded from the CGenFF website so it can be converted to GROMACS format. Before continuing, the contents of \texttt{jz4.str} should be inspected. CGenFF calculates penalty scores as an indicator of the quality of the topology. Parameters are assigned by analogy, and in cases for which a strong match cannot be made, the penalty score will be large. Any penalty less than 10 indicates a reliable topology. Penalties between 10 and 50 inform the user that some refinement may be necessary, and at minimum, some basic validation should be performed (QM potential energy scans in the case of bonded parameters, QM water interactions for charges), and penalty scores larger than 50 indicate that significant manual refinement or reparametrization is required. The CGenFF topology for 2-propylphenol has penalties below 1 for both charges and the new dihedrals that were generated. This topology is likely suitable for use directly as it is.
-
-To produce a GROMACS-formatted topology, use the \\\texttt{cgenff\_charmm2gmx.py} script downloaded earlier from the MacKerell lab website. Invoke it as follows:
-
-\begin{lstlisting}
-$ python cgenff_charmm2gmx.py JZ4 jz4_fix.mol2 jz4.str charmm36-mar2019.ff
-\end{lstlisting}
-%
-Recall from the introduction that this conversion script requires a Python version in the 2.7.x series, with a NetworkX version in the 1.11.x series, not the 2.x series. When finished, the conversion script will produce three important output files:
-
-\begin{enumerate}
-	\item \texttt{jz4.itp} - the topology of 2-propylphenol (JZ4) in GROMACS format
-	\item \texttt{jz4.prm} - additional parameters required for the ligand topology
-	\item \texttt{jz4\_ini.pdb} - the coordinates of the ligand
-\end{enumerate}
-
-To regenerate the protein-ligand complex, the coordinates of JZ4 (with hydrogen atoms added) must be appended to those of the T4 lysozyme enzyme. First, convert the \texttt{jz4\_ini.pdb} to \texttt{.gro} format:
-
-\begin{lstlisting}
-$ gmx editconf -f jz4_ini.pdb -o jz4.gro
-\end{lstlisting}
-
-Copy the enzyme coordinates from \texttt{3HTB\_processed.gro} to a new file, called \texttt{complex.gro}. Copy and paste the coordinates from \texttt{jz4.gro} into \texttt{complex.gro}, immediately after the protein coordinates and before the last line containing the box vectors. The JZ4 ligand contains 22 atoms, so add 22 to the number of protein atoms in the second line of \texttt{complex.gro}. There should be 2636 atoms in this coordinate file after the addition of the ligand coordinates.
-
-Having added the coordinates of the ligand to the system, the topology must also be updated. Add the ligand topology to \texttt{topol.top} as shown here:
-
-\begin{lstlisting}
-; Include Position restraint file
-#ifdef POSRES
-#include "posre.itp"
-#endif
-
-; Include ligand topology
-#include "jz4.itp"
-
-; Include water topology
-#include "./charmm36-mar2019.ff/tip3p.itp"
-\end{lstlisting}
-
-Since the ligand requires new parameters to be added to the force field, the \texttt{jz4.prm} file must also be add to the topology via an \texttt{\#include} statement. Such a statement must be placed specifically within \texttt{topol.top}. It must be after the \texttt{\#include} statement for the CHARMM36 force field, but before the declaration of the protein \texttt{[moleculetype]} directive. Bonded parameters can only be added for known atom types, hence why \texttt{jz4.prm} must be added after the first call to the CHARMM36 force field. Similarly, all parameters in the force field must be defined before any molecule definitions can be introduced. Therefore, update \texttt{topol.top} to read as follows:
-
-\begin{lstlisting}[basicstyle=\small\ttfamily]
-; Include forcefield parameters
-#include "./charmm36-mar2019.ff/forcefield.itp"
-
-; Include ligand parameters
-#include "jz4.prm"
-
-[ moleculetype ]
-; Name            nrexcl
-Protein_chain_A     3
-\end{lstlisting}
-
-Finally, update the contents of the \texttt{[ molecules ]} directive of \texttt{topol.top} to reflect the fact that the ligand coordinates have been added to the system:
-
-\begin{lstlisting}[basicstyle=\small\ttfamily]
-[ molecules ]
-; Compound        #mols
-Protein_chain_A     1
-JZ4                 1
-\end{lstlisting}
-
-\subsubsection{Solvate the System} \label{complex_solv}
-
-The remaining steps in preparing the simulation system are much like any other system of a protein in water. In this tutorial example, the protein-ligand complex will be solvated in a rhombic dodecahedral unit cell, which requires only approximately 77\% of the volume of a cubic unit cell with the same periodic distance. It is therefore more efficient to use such a box shape. Place the T4 lysozyme-JZ4 complex in a rhombic dodecahedral box with \texttt{editconf} and add water with \texttt{solvate}.
-
-\begin{lstlisting}
-$ gmx editconf -f complex.gro -o newbox.gro -bt dodecahedron -d 1.0
-
-$ gmx solvate -cp newbox.gro -cs spc216.gro -p topol.top -o solv.gro
-\end{lstlisting}
-
-When visualized, it will appear that the protein-ligand complex has not been centered in the box and the added water appears to occupy a tetragonal unit cell. This point is often confusing for new users but should not be a concern. By default, GROMACS will re-wrap the coordinates into a triclinic box, which is the most efficient form for carrying out the necessary vector operations during a simulation. The coordinates of the solvated system and their relationship to a triclinic unit cell are shown in Figure~\ref{3htb_unit_cell_fig}. Recovering the dodecahedral box shape will be discussed later in this tutorial, but it is not necessary to make any changes to the solvated coordinates. The desired geometry will be used in the simulation.
-
-\begin{figure}[h!]
-\centering
-\includegraphics{3htb_unit_cell}
-\caption{The coordinates of the solvated system and within a triclinic unit cell shape.}
-\label{3htb_unit_cell_fig}
-\end{figure}
-
-Next, add neutralizing counterions to the system. The T4 lysozyme enzyme carries a +6 charge at neutral pH, so 6 Cl\textsuperscript{$-$} ions will be added by \texttt{genion}.
-
-\begin{lstlisting}
-$ gmx grompp -f ions.mdp -c solv.gro -p topol.top -o ions.tpr
-
-$ gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral
-\end{lstlisting}
-
-\subsubsection{Energy Minimization and Equilibration} \label{complex_em_eq}
-
-The solvated, neutralized system will be energy-minimized and equilibrated in two phases, $NVT$ and $NPT$, following the same protocol as the lysozyme system described above (Sections~\ref{lyso_em} and~\ref{lyso_equil}). There are notable differences in the \texttt{.mdp} files used here that warrant further explanation. The CHARMM36 force field requires the use of a switching function on the short-range forces, rather than a plain cutoff. The relevant settings are listed here:
-
-\begin{lstlisting}
-cutoff-scheme           = Verlet
-ns_type                 = grid
-nstlist                 = 20
-rlist                   = 1.2
-vdwtype                 = cutoff
-vdw-modifier            = force-switch
-rvdw-switch             = 1.0
-rvdw                    = 1.2
-\end{lstlisting}
-
-The short-range nonbonded cutoff is set to 1.2 nm, and a buffered neighbor list is constructed with the Verlet cutoff scheme, meaning that the actual value of \texttt{rlist} will be increased as needed to conserve energy. The van der Waals forces are truncated (\texttt{vdwtype = cutoff}) at 1.2 nm (\texttt{rvdw}), with an "inner" cutoff of 1.0 nm set with \texttt{rvdw-switch}, specifying the start of a region over which the forces are smoothly switched to zero, specified by \texttt{vdw-modifier = force-switch}. This nonbonded convention is the one for which the CHARMM force field was parametrized. It is important to utilize these settings to ensure a valid simulation. Electrostatic forces are calculated with PME and a real-space cutoff of 1.2 nm.
-
-\begin{lstlisting}
-$ gmx grompp -f em.mdp -c solv_ions.gro -p topol.top -o em.tpr
-
-$ gmx mdrun -deffnm em
-\end{lstlisting}
-
-During equilibration, the solute non-hydrogen atoms are typically restrained. In this system, the solute includes the 2-propylphenol ligand, but no restraint topology exists for it. The GROMACS \texttt{genrestr} program can be used to create such a topology, but first an index group specifying only the non-hydrogen atoms in the ligand is required. Create the index file with \texttt{make\_ndx}:
-
-\begin{lstlisting}
-gmx make_ndx -f jz4.gro -o index_jz4.ndx
-> 0 & ! a H*
-> q
-\end{lstlisting}
-%
-The expression above (\texttt{0 \& ! a H*}) selects all atoms in the system (group 0) that do not (!) have names starting with H. Once this index file has created, use it to write a position restraint topology for the ligand, selecting group 3 when prompted.
-
-\begin{lstlisting}
-$ gmx genrestr -f jz4.gro -o posre_jz4.itp -n index_jz4.ndx -fc 1000 1000 1000
-\end{lstlisting}
-
-In Section~\ref{lyso_equil}, the concept of thermostats was introduced. The typical strategy is to assign solute and solvent atom to separate thermostatting groups. In this case, the ligand is encompassed by the default \texttt{non-Protein} group. Given that the ligand is physically bound to the protein, its dynamics are therefore coupled to those of the protein in a way that makes it illogical to include the ligand in the generic \texttt{non-Protein} group, which includes solvent. It is more logical to couple the ligand together with the protein. To do so, again invoke \texttt{make\_ndx} to merge the "Protein" and "JZ4" groups (1 and 13, respectively):
-
-\begin{lstlisting}
-$ gmx make_ndx -f em.gro -o index.ndx
-...
-> 1 | 13
-> q
-\end{lstlisting}
-
-Then, continue with $NVT$ and $NPT$ equilibration. In each, the thermostat has two groups (\texttt{tc-grps}). One is set to the merged protein-ligand group (\texttt{Protein\_JZ4}) and the other is the solvent (\texttt{Water\_and\_ions}).
-
-\begin{lstlisting}
-$ gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -n index.ndx -o nvt.tpr
-
-$ gmx mdrun -deffnm nvt
-\end{lstlisting}
-
-\begin{lstlisting}
-$ gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p topol.top -n index.ndx -o npt.tpr
-
-$ gmx mdrun -deffnm npt
-\end{lstlisting}
-
-\subsubsection{Production MD Simulation} \label{complex_md}
-
-Once equilibrated, the position restraints are released and a production MD simulation is performed. All settings in the \texttt{.mdp} file are familiar by now and need no repeating here. In this tutorial, the simulation will be carried out for 10 ns, which is still generally too short for most real purposes, but enough time to illustrate some principles of post-processing and analysis in the next section.
-
-\begin{lstlisting}
-$ gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o md_0_10.tpr
-
-$ gmx mdrun -deffnm md_0_10
-\end{lstlisting}
-
-\subsubsection{Analysis} \label{complex_analysis}
-
-After the simulation is over, the effects of periodic boundary conditions must be accounted for, as in Section~\ref{lyso_ana}. The GROMACS \texttt{trjconv} program is again used to perform the required coordinate manipulations. Additionally, \texttt{trjconv} allows for re-wrapping of the coordinates to recover the rhombic dodecahedral box shape. Process the MD trajectory by placing all whole molecules in the box, wrapping the coordinates into their most compact form, and centering the protein:
-
-\begin{lstlisting}
-$ gmx trjconv -s md_0_10.tpr -f md_0_10.xtc -o md_0_10_center.xtc -center -pbc mol -ur compact
-\end{lstlisting}
-%
-Choose the "Protein" group for centering  and "System" for output.
-
-To visualize the trajectory in a program like VMD, extract the first frame and save it as a coordinate file (\texttt{.gro} or \texttt{.pdb} format):
-
-\begin{lstlisting}
-$ gmx trjconv -s md_0_10.tpr -f md_0_10_center.xtc -o start.pdb -dump 0
-\end{lstlisting}
-%
-It is also apparent that this coordinate file has the expected box shape (Figure~\ref{3htb_t0_rewrap_fig}).
-
-\begin{figure}[h!]
-\centering
-\includegraphics{3htb_t0_rewrap}
-\caption{The coordinates of the solvated, equilibrated system after coordinate re-wrapping to yield the most compact box shape, the rhombic dodecahedron.}
-\label{3htb_t0_rewrap_fig}
-\end{figure}
-
-To make an even smoother rendering of the trajectory, perform rotational and translational fitting. Select "Backbone" for fitting and "System" for output. Note that fitting and PBC re-wrapping cannot be performed at the same time, hence there are two calls to \texttt{trjconv} needed to perform these steps. Rotational and translational fitting via \texttt{trjconv} is not required for analysis, but can be useful for visualization, particularly for long trajectories in which the protein may diffuse substantially.
-
-\begin{figure}[ht!]
-\centering
-\includegraphics{3htb_jz4_zoom}
-\caption{The 2-propylphenol ligand in the active site of T4 lysozyme after energy minimization, with nearby Gln102 shown in ball-and-stick rendering.}
-\label{3htb_jz4_zoom_fig}
-\end{figure}
-
-\begin{lstlisting}
-$ gmx trjconv -s md_0_10.tpr -f md_0_10_center.xtc -o md_0_10_fit.xtc -fit rot+trans
-\end{lstlisting}
-
-The 2-propylphenol ligand principally interacts with T4 lysozyme via hydrophobic interactions, but it can form one hydrogen bond with the enzyme, between the hydroxyl group of the ligand phenol moiety and the carbonyl oxygen atom (O$\epsilon$) of Gln102 (Figure~\ref{3htb_jz4_zoom_fig}). The initial position of the phenolic hydrogen atom built by Avogadro is such that this hydrogen bond is not formed, even after energy minimization. It may be of interest to monitor the formation of this hydrogen bond during the simulation to see if it is indeed a stabilizing force, as expected. The GROMACS \texttt{hbond} program can be useful for this purpose, but in this tutorial, a different approach will be taken, as \texttt{hbond} will just produce a series of 0 or 1 values over time. A typical hydrogen bond is defined as having a donor-acceptor distance $\le$ 3.5 \AA~(0.35 nm) and a donor - acceptor - hydrogen angle of $\le$ 30\textdegree~(alternatively defined as a donor - hydrogen - acceptor angle of $\ge$ 150\textdegree). Here, two different programs will be used to generate distance and angle time series, demonstrating how to use the GROMACS \texttt{distance} and \texttt{angle} programs, as well as additional use of \texttt{make\_ndx} to create index groups needed for the angle analysis.
-
-To compute the distance between the JZ4 phenol oxygen atom (named OAB, see Figure~\ref{jz4_fig}) and the Gln102 O$\epsilon$ atom (named OE1), execute the GROMACS \texttt{distance} program:
-
-\begin{lstlisting}
-$ gmx distance -s md_0_10.tpr -f md_0_10_center.xtc -select 'resname "JZ4" and name OAB plus resid 102 and name OE1' -oall
-\end{lstlisting}
-%
-The \texttt{distance} program will produce a time series to \texttt{dist.xvg} and will print statistics to the terminal:
-
-\begin{lstlisting}
-Number of samples:  1001
-Average distance:   0.31031  nm
-Standard deviation: 0.05078  nm
-\end{lstlisting}
-
-Next, create an index file consisting of the JZ4 OAB and H12 atoms (Figure~\ref{jz4_fig}) and the Gln102 OE1 atom:
-
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-$ gmx make_ndx -f em.gro -n index.ndx 
-> 13 & a OAB | a H12
-
-Copied index group 13 'JZ4'
-Found 1 atoms with name OAB
-Merged two groups with AND: 22 1 -> 1
-Found 1 atoms with name H12
-Merged two groups with OR: 1 1 -> 2
-
- 23 JZ4_&_OAB_H12       :     2 atoms
-
-> 1 & r 102 & a OE1
-
-Copied index group 1 'Protein'
-Merged two groups with AND: 2614 17 -> 17
-Found 14 atoms with name OE1
-Merged two groups with AND: 17 14 -> 1
-
- 24 Protein_&_r_102_&_OE1:     1 atoms
-
-> 23 | 24
-
-Copied index group 23 'JZ4_&_OAB_H12'
-Copied index group 24 'Protein_&_r_102_&_OE1'
-Merged two groups with OR: 2 1 -> 3
-
- 25 JZ4_&_OAB_H12_Protein_&_r_102_&_OE1:     3 atoms
-\end{lstlisting}
-%
-By supplying the existing \texttt{index.ndx} file to \texttt{make\_ndx}, the new groups will be appended to the existing input file that was used previously for the simulations. The first selection (\texttt{13 \& a OAB | a H12}) specifies the atoms in group 13 (the JZ4 ligand) that are named either OAB or H12, returning the two atoms that meet these criteria. This group is saved in the index file as group 23. The next selection returns a single atom, the OE1 atom of protein residue 102 (Gln102) from group 1 (Protein), which is saved as group 24. The final command merges the two new groups into one group consisting of three atoms, which is necessary for calculating the angle formed by these atoms. Next, invoke the \texttt{angle} program:
-
-\begin{lstlisting}
-$ gmx angle -f md_0_10_center.xtc -n index.ndx -ov angle.xvg  
-\end{lstlisting}
-%
-The \texttt{angle} program also prints useful statistics to the terminal:
-
-\begin{lstlisting}
-Found points in the range from 1 to 123 (max 180)
- < angle >  = 23.3454
-< angle^2 > = 632.498
-Std. Dev.   = 9.35373
-\end{lstlisting}
-%
-The average value is 23 $\pm$ 9\textdegree, which is somewhat unexpected; if the angle is defined as OAB - H12 - OE1 and the hydrogen bond is maintained (as it appears to from visual inspection of the trajectory), why is it that the value is so low and not somewhat closer to 180\textdegree? Inspect the contents of \texttt{index.ndx} and group 25 will contain:
-
-\begin{lstlisting}
-[ JZ4_&_OAB_H12_Protein_&_r_102_&_OE1 ]
-1616 2624 2636
-\end{lstlisting}
-
-GROMACS intrinsically sorts the atom indices in the groups, so the actual angle that is returned corresponds to OE1 - OAB - H12, more akin to the typical hydrogen bonding definition. The output from the \texttt{angle} program thus corresponds to the degree to which the hydrogen-bonded atoms deviate from linearity. The average value (23 $\pm$ 9\textdegree) matches the expectation for a hydrogen bond ($\le$ 30\textdegree). If one were to want to obtain an actual time series of the OAB - H12 - OE1 angle, the atoms in the index group would have to be reordered as such:
-
-\begin{lstlisting}
-[ JZ4_&_OAB_H12_Protein_&_r_102_&_OE1 ]
-2624 2636 1616
-\end{lstlisting}
-%
-Using this index group as an input into the \texttt{angle} program yields an average value of 147 $\pm$ 11\textdegree.
-
-Another analysis that is commonly performed in simulations of protein-ligand complexes is the ligand RMSD, to determine how much the binding pose changed over time. This quantity can be useful in assessing the stability of the interactions between the ligand and the protein, and also as an indicator of the quality of the ligand topology. That is, a poor-quality topology will not preserve the native interactions and will often lead to distorted binding poses or even dissociation. Begin by creating a new index group containing only the heavy atoms of 2-propylphenol:
-
-\begin{lstlisting}
-$ gmx make_ndx -f em.gro -n index.ndx
-> 13 & ! a H*
-> name 26 JZ4_Heavy
-> q
-\end{lstlisting}
-%
-This selection should look familiar, as it is the same syntax used to create an index group before generating the ligand position restraint topology. Why, then, is it necessary to recreate it here? The restraint topology requires atom numbers that match those of the \texttt{[moleculetype]} definition, which run from 1 to the number of atoms in the molecule (in this case, 22). These atom numbers differ from the global atom numbers in the coordinate file of the system. That is, in \texttt{posre\_jz4.itp}, the only valid numbers are from 1-22, but the atom numbers of JZ4 in the final system are from 2615-2636, because they appear after the protein (atoms 1-2614). After creating this index group, execute the \texttt{rms} program. Choose "Backbone" for least-squares fitting and "JZ4\_Heavy" for the group for RMSD calculation. Doing so computes the RMSD of the ligand in the context of overall fitting of the protein's motion, that is, how much the ligand has moved relative to the protein.
-
-\begin{lstlisting}
-$ gmx rms -s em.tpr -f md_0_10_center.xtc -tu ns -o rmsd_jz4.xvg -n index.ndx
-\end{lstlisting}
-%
-Note the use of \texttt{em.tpr} as the reference structure. The RMSD is thus being computed using the energy-minimized crystal coordinates as reference. Over the 10-ns simulation, the ligand RMSD plateaus at a value of \textasciitilde0.1 nm (1 \AA). Such a low value indicates that the binding pose was very stable, at least on this short time scale.
-
-The final analysis that will be performed is an interaction energy calculation. GROMACS provides the ability to compute the short-range nonbonded interaction energy between any groups of atoms. Note that this quantity may not have real, physical meaning if the force field was not parametrized to do so. As the CHARMM force field includes explicit targeting of QM water interactions with all species, it is intrinsically balanced in such a way that interaction energy can be a useful metric. This quantity should not, however, be confused with a "binding energy" or a free energy of any sort. It is simply a decomposition of the potential energy of the system, including only nonbonded terms between the selected atom groups.
-
-Interaction energies can be computed using \texttt{mdrun} in conjunction with its \texttt{-rerun} option. Create a new \texttt{.mdp} file ({\em e.g.} a copy of \texttt{md.mdp}) that now includes the line:
-
-\begin{lstlisting}
-energygrps              = Protein JZ4
-\end{lstlisting}
-
-Use \texttt{grompp} to create a new \texttt{.tpr} file, and subsequently recalculate the energies of the configurations in the trajectory with \texttt{mdrun -rerun}. Note that the \texttt{mdrun} command instructs GROMACS to compute the energies using only CPU hardware. Doing so is required because multiple energy groups are not supported on GPU.
-
-\begin{lstlisting}
-$ gmx grompp -f ie.mdp -c npt.gro -t npt.cpt -p topol.top -n index.ndx -o ie.tpr
-
-$ gmx mdrun -deffnm ie -rerun md_0_10.xtc -nb cpu
-\end{lstlisting}
-
-Extract the interaction energy components, Coul-SR:Protein-JZ4 (group 51) and LJ-SR:Protein-JZ4 (group 52) using the \texttt{energy} program:
-
-\begin{lstlisting}
-$ gmx energy -f ie.edr -o interaction_energy.xvg
-\end{lstlisting}
-%
-The output should indicate that the short-range Coulombic interaction energy is -20.5 $\pm$ 7.4 kJ mol\textsuperscript{$-$1} and the short-range Lennard-Jones interaction energy is -99.1 $\pm$ 7.2 kJ mol\textsuperscript{$-$1}. The decomposition of these terms, regardless of force field, has no physical meaning. Only the total interaction energy may be considered a useful metric, again only if the force field has been parametrized in such a way that makes this quantity useful. Thus, the total interaction energy between 2-propylphenol and T4 lysozyme over the 10-ns MD simulation performed here is -119.6 $\pm$ 10.3 kJ mol\textsuperscript{$-$1}.
-
-\subsubsection{Summary and Review of Objectives} \label{prot_lig_summary}
-
-This tutorial has guided the user through the process of preparing a protein-ligand system for an MD simulation. The preparation of a reliable ligand topology is the most challenging aspect of the process, and in this example, the  CGenFF web server was used to prepare a topology for 2-propylphenol that is compatible with the CHARMM36 protein force field. After adding hydrogen atoms to the crystal coordinates of the ligand, producing a \texttt{.mol2} file defining bonded connectivity and primitive atom types, the topology was produced in CHARMM format and subsequently converted to yield a GROMACS-compatible topology.  To review, the learning objectives of the tutorial are:
-
-\begin{enumerate}
-	\item Produce a ligand topology outside of GROMACS and incorporate it into a system topology
-	\item Determine how to verify if a ligand topology is suitable for further simulation
-	\item Perform analysis of interactions between a protein and a ligand
-\end{enumerate}
-
-Each of these objectives was addressed in Section~\ref{complex_lig_top}. Other new concepts introduced in this tutorial were those related to special considerations for thermostatting groups (merging the protein and ligand groups), re-wrapping of coordinates when using a rhombic dodecahedral unit cell shape, generating index groups for ligand-specific analysis, and calculating interaction energies after the simulation has finished.
-
-
-
-%%%%%%%%% TUTORIAL 6 %%%%%%%%%
-\subsection{Tutorial 6: Free Energy of Solvation} \label{fes}
-
-\begin{figure}[H]
-\centering
-\includegraphics{free_energy_methane_water}
-\caption{A single methane molecule (CH\textsubscript{4}) in water.}
-\label{free_energy_methane_water_fig}
-\end{figure}
-
-In Section~\ref{pmf}, the concept of computing a free energy difference along a reaction coordinate was introduced. There is another type of free energy calculation frequently employed in MD simulations, in which a set of atoms is transformed in some manner from one state to another (typically denoted A and B), yielding some difference in free energy that relates to this change in topology. Common applications include mutating one small molecule to another and computing a $\Delta\Delta$G of binding (a relative free energy difference) or by turning off all interactions between some molecule and the remaining system, yielding $\Delta$G of solvation in that system (an absolute free energy difference). The free energy difference between two states, A and B, was originally defined by Zwanzig~\cite{Zwanzig1954}:
-
-\begin{equation} \label{fep_eq}
-\Delta G(A \longrightarrow B) = G_B - G_A = -k_B T \left \langle exp \left(-\frac{E_B - E_A}{k_B T}\right)\right \rangle_A
-\end{equation}
-
-That is, for every configuration generated in state A, the energy of the system is also evaluated in state B, from which the free energy difference, $\Delta$G, is calculated. This approach is called free energy perturbation (FEP). The drawback to the approach is that convergence is difficult unless the difference between the two states is small. For "mutation" of one molecule into another, or to transform a molecule from a fully interacting to a non-interacting state, this approach may fail to converge. In practice, such a calculation of a free energy difference is actually a series of MD simulations, in which the molecule of interest progressively has its topology changed from state A to state B as a function of a discrete coupling factor, $\lambda$. In these simulations, the Hamiltonian $H(\mathbf{r}, \mathbf{p})$ in terms of atomic coordinates ($\mathbf{r}$) and momenta ($\mathbf{p}$) is extended to include $\lambda$, {\em e.g.} $H(\mathbf{r}, \mathbf{p}; \lambda)$. For a given value of $\lambda$ (which takes values from 0 to 1, indicating fully in the A-state and fully in the B-state, respectively), the Hamiltonian of the system is expressed as:
-
-\begin{equation} \label{fes_hamiltonian_eq}
-H(\mathbf{r},\mathbf{p};\lambda) = (1 - \lambda) H^A(\mathbf{r},\mathbf{p}) + \lambda H^B(\mathbf{r},\mathbf{p})
-\end{equation}
-
-This approach to determining free energy differences is often called an "alchemical transformation," as it involves unphysical intermediates. For example, when determining $\Delta$G of solvation, state A ($\lambda = 0$) would correspond to the solute in a non-interacting state. In other words, the molecule experiences intramolecular interactions but no intermolecular interactions ({\em e.g.} solute-solvent) such that it samples the ideal gas state. State B ($\lambda = 1$) would then correspond to the fully interacting state, in which all nonbonded interactions are at full strength. Setting $\lambda = 0.5$ indicates that intermolecular interactions are at half strength, but how does one define a molecule that is halfway interacting with its surrounding environment? These are unphysical intermediates. However, since $\Delta$G is a state function, it does not matter what path is taken to arrive at the final answer, and the purpose of these intermediates is to define changes in energy that are small enough that they allow for convergence of the calculation.
-
-Another method used to evaluate free energy differences is thermodynamic integration (TI), wherein the same $\lambda$-dependent transformation is carried out, and the quantity $\frac{\partial H(\lambda)}{\partial \lambda}$ is stored. After the simulations are finished, the integral is taken over the entire $\lambda$ range:
-
-\begin{equation} \label{ti_eq}
-\Delta G = \int_{0}^{1} \left\langle \frac{\partial H(\lambda)}{\partial \lambda} \right\rangle d\lambda
-\end{equation}
-
-The method used for computing $\Delta$G in this tutorial is the Bennett Acceptance Ratio (BAR)~\cite{Bennett1976}. Bennett originally formulated this method for Monte Carlo (MC) simulations, however it is easily extended to MD simulations, which are essentially MC simulations in which all trial moves are accepted. The BAR method is based on an assumption that states A and B share the same microstates, though the energies of these microstates are different. Bennett subsequently demonstrated that for functions satisfying detailed balance, one can compute the free energy change between states from the Metropolis function in the simplest case:
-
-\begin{equation} \label{metropolis_eq}
-M(x) \equiv min(e^{-x}, 1)
-\end{equation}
-%
-such that
-
-\begin{equation} \label{bar_simplest_eq}
-e^{-\beta\Delta G} = \frac{\left\langle M\left(\beta\left(U_B - U_A\right)\right)\right\rangle_A}{\left\langle M\left(\beta\left(U_A - U_B\right)\right)\right\rangle_B}
-\end{equation}
-%
-where $\beta = (k_B T)^{-1}$ and the angle brackets denote the ensemble averages over the configurations in states A and B.
-
-Bennett demonstrates that in the more general case, in which some function, $f$, is used that includes some unknown free energy offset, $C$:
-
-\begin{equation} \label{bar_general_eq}
-e^{-\beta(\Delta G - C)} = \frac{\left\langle f\left(\beta\left(U_B - U_A - C\right)\right)\right\rangle_A}{\left\langle f\left(\beta\left(U_A - U_B + C\right)\right)\right\rangle_B}
-\end{equation}
-%
-that the free energy can be estimated with minimum error when the chosen function is the Fermi function:
-
-\begin{equation} \label{bar_fermi_eq}
-f(x) = \frac{1}{1 + e^x}
-\end{equation}
-%
-which, when used in Equation~\ref{bar_general_eq}, and solving iteratively after an initial estimate for $C$, yields:
-
-\begin{equation} \label{bar_final_eq}
-\Delta G \approx C
-\end{equation}
-
-This tutorial (available online at \tutorialfes) will guide the user through the calculation of the free energy change associated with removing van der Waals interactions of methane with water (Figure~\ref{free_energy_methane_water_fig}) using the BAR algorithm, implemented in GROMACS as the \texttt{bar} program. This quantity is part of the total transformation of methane that would be used to compute the complete free energy of solvation, $\Delta$G\textsubscript{solv}. This quantity has been rigorously calculated by Shirts et al. using the TI method~\cite{Shirts2003}.
-
-\subsubsection{System Contents} \label{fes_top}
-
-The system considered here contains a single methane (CH\textsubscript4) molecule solvated in 596 water molecules (Figure~\ref{free_energy_methane_water_fig}). The OPLS-AA force field~\cite{Kaminski2001} is used to describe methane and TIP3P~\cite{Jorgensen1983} is the water model. The coordinate and topology files for the system are available from the online version of this tutorial. A brief description of the topology contents is warranted here. The following describes the methane \texttt{[moleculetype]}:
-
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-[ moleculetype ]
-; Name                       nrexcl
-Methane                      3
-
-[ atoms ]
-; nr      type resnr residue atom cgnr  charge    mass
-   1  opls_138     1   ALAB    CB    1   0.000  12.011   
-   2  opls_140     1   ALAB   HB1    2   0.000   1.008   
-   3  opls_140     1   ALAB   HB2    3   0.000   1.008   
-   4  opls_140     1   ALAB   HB3    4   0.000   1.008   
-   5  opls_140     1   ALAB   HB4    5   0.000   1.008
-\end{lstlisting}
-
-The residue is named "ALAB," from the $\beta$-carbon of alanine, for which methane serves as a model compound. All of the charges on the atoms are set to zero, though strictly speaking, it is not necessary to do so. This tutorial will only consider the van der Waals transformation (that is, turning off Lennard-Jones interactions as a function of $\lambda$). In past versions of GROMACS (e.g. 4.0 and earlier), to do such a transformation would have required a topology with the form shown here, so that Coulombic interactions are not included. As will be explained below, charges can be present in the topology but also ignored. Should the user wish to perform a full transformation to calculate $\Delta$G\textsubscript{solv}, appropriate charges for all H atoms are +0.060 and -0.240 for the C atom. The topology shown here corresponds to the A-state of the molecule, such that it is fully interacting with its environment. It is also not necessary to specify a B-state in the topology (as was the case in past GROMACS versions, as well) since the transformation of nonbonded terms is controlled entirely in the \texttt{.mdp} file. A relative free energy calculation, in which one molecule is "mutated" to another, does require explicit B-state parameters (atom types and charges) to be set. Such a calculation is beyond the scope of this tutorial.
-
-\subsubsection{Free Energy Settings} \label{fes_settings}
-
-Every \texttt{.mdp} file used in this tutorial has a section with the following form:
-
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-free_energy              = yes
-init_lambda_state        = 0
-delta_lambda             = 0
-calc_lambda_neighbors    = 1
-couple-moltype           = Methane
-couple-lambda0           = vdw
-couple-lambda1           = none
-couple-intramol          = no
-vdw_lambdas              = 0.00 0.05 0.10 0.15 ...
-coul_lambdas             = 0.00 0.00 0.00 0.00 ...
-bonded_lambdas           = 0.00 0.00 0.00 0.00 ...
-restraint_lambdas        = 0.00 0.00 0.00 0.00 ...
-mass_lambdas             = 0.00 0.00 0.00 0.00 ...
-temperature_lambdas      = 0.00 0.00 0.00 0.00 ...
-sc-alpha                 = 0.5
-sc-coul                  = no
-sc-power                 = 1
-sc-sigma                 = 0.3
-nstdhdl                  = 10
-\end{lstlisting}
-
-The \texttt{free\_energy} keyword instructs \texttt{grompp} to read the relevant free energy settings. If this keyword is set to \texttt{no}, then all the options shown are ignored. The \texttt{init\_lambda\_state} determines the value of $\lambda$, which is actually a vector, as explained below. The \texttt{delta\_lambda} keyword allows $\lambda$ to change as a function of time, in what are called "slow-growth" free energy calculations. Such a feature will not be used in this tutorial. The \texttt{calc\_lambda\_neighbors} keyword will instruct \texttt{mdrun} on how many neighboring values of $\lambda$ it should evaluate the energy of the system. Recall from Equation~\ref{bar_general_eq} that the energies of A- and B-states for a given configuration are needed. It is also possible to use multiple neighboring states (discussed below). For standard BAR, only a single neighbor needs its energy evaluated under the B-state topology.
-
-The \texttt{couple-moltype} specifies the \texttt{[moleculetype]} name that will have its topology transformed as a function of $\lambda$. The \texttt{couple-lambda0} and \texttt{couple-lambda1} keywords specify which interactions are on in the A- and B-states, respectively. Valid options for these keywords are \texttt{vdw-q} (meaning both vdW and Coulombic interactions are fully on), \texttt{vdw} (only vdW), \texttt{q} (only Coulombic), and \texttt{none} (no intermolecular interactions; the coupled \texttt{[moleculetype]} is non-interacting, {\em i.e.} in the ideal gas state). The \texttt{couple-intramol} setting determines whether or not intramolecular nonbonded interactions are to be transformed as a function of $\lambda$. For small molecules, this option is typically set to \texttt{no} such that the fully transformed state still corresponds to the ideal gas state. Larger molecules may become trapped in a narrowly defined conformational ensemble, requiring softening of intramolecular nonbonded interactions, in which case \texttt{couple-moltype} might be set to \texttt{yes}. Methane has no intramolecular nonbonded interactions, so this setting will not affect the outcome, but for larger molecules it may be relevant.
-
-From these options, the transformation of methane is now defined. The A-state corresponds to a molecule that interacts with water only via vdW interactions (\texttt{couple-moletype0 = vdw}). This setting is why it is irrelevant if charges are defined in the topology; even if present, they will be ignored. In the B-state, methane is non-interacting (\texttt{couple-moltype1 = none}), so the $\Delta$G calculated in this series of simulations will correspond to the vdW contribution to $-\Delta$G\textsubscript{solv}. $\Delta$G\textsubscript{solv} is formally defined as the free energy change associated with the introduction of a solute into solvent, which would be specified by inverting the definitions of the A- and B-states defined here.
-
-The next set of options define the $\lambda$ vector for nonbonded interactions (vdW and Coulombic) as well as bonded terms and restraints, masses of atoms, and the temperature of the system. Scaling temperatures is only relevant for simulated tempering~\cite{Marinari1992,Geyer1995}, which will not be discussed in this tutorial. These settings are used to define the $\lambda$ vector, which is indexed with the \texttt{init\_lambda\_state} keyword. Vectors are zero-based indices, so $\lambda$[0] = (0.00, 0.00, 0.00, 0.00, 0.00, 0.00), $\lambda$[1] = (0.05, 0.00, 0.00, 0.00, 0.00, 0.00) and so on, corresponding to each column of values in the \texttt{*\_lambdas} arrays. Though charges are not being transformed in this example, it is important to note that in such a case, charges should not be present on atoms that have no vdW terms to avoid numerical instability. That is, charges should only ever be "on" for atoms that have full vdW interactions. For this reason, setting \texttt{couple-moltype* = q} is very uncommon.
-
-The options starting with \texttt{sc-} define parameters associated with "soft-core" modification of potentials~\cite{Beutler1994}. As $\lambda$ increasingly defines atoms with no vdW radii or very weak charges (in the absence of vdW terms), it is possible for atoms to overlap, leading to a numerical singularity (infinite force). While all $\lambda$-dependent transformations inherently sample unphysical states, a singularity makes calculation of the forces impossible and therefore must be prevented. To circumvent this problem, nonbonded potentials can be shifted, as shown in Equation~\ref{sc_eq} for the Lennard-Jones form of vdW interactions: 
-\begin{equation} \label{sc_eq}
-\footnotesize
-U_{ij}^{LJ} (r_{ij};\lambda) = 4\epsilon\lambda^p\left(\left[\alpha(1-\lambda)^p + \left(\frac{r_{ij}}{\sigma_{ij}}\right)^6\right]^{-2} - \left[\alpha(1-\lambda)^p + \left(\frac{r_{ij}}{\sigma_{ij}}\right)^6\right]^{-1}\right)
-\end{equation}
-%
-The \texttt{sc-alpha} keyword sets the value of $\alpha$ in Equation~\ref{sc_eq}. The \texttt{sc-power} option sets the value of $p$; here, this parameter is set to 1 to indicate a linear dependence on $\lambda$, which has been shown to be a robust approach in conjunction with $\alpha = 0.5$~\cite{Pitera2002,Steinbrecher2007,Shirts2005}. The \texttt{sc-sigma} keyword specifies a value of $\sigma$ for atoms that have force field parameter values of $\sigma$ less than this specified value. This setting is important for atoms like hydrogen, which often do not have their own Lennard-Jones parameters. The final option, \texttt{sc-coul}, is not relevant here as charges are not being transformed. Typically, soft-core modifications are not applied to Coulombic interactions, if the transformation is being carried out on atoms that still have vdW interactions (the recommended approach). However, if one is transforming charges on atoms that do not have vdW interactions, the soft-core modification is recommended to avoid the same numerical singularity problems described above.
-
-The last setting in this section of the \texttt{.mdp} file, \texttt{nstdhdl}, simply specifies the interval (in number of time steps) for writing the values of $\frac{\partial H(\lambda)}{\partial \lambda}$ to the output file.
-
-\subsubsection{Workflow} \label{fes_workflow}
-
-The calculation of $\Delta$G for removing vdW interactions between methane and water will be carried out in 21 individual simulations, one for each of the $\lambda$ vectors defined in the \texttt{.mdp} files. Preceding each production simulation, the system will be energy-minimized, then equilibrated under an $NVT$ and then an $NPT$ ensemble for 100 ps each. Following these preparation steps, the production MD simulations (during which data are collected) will be carried out for 1 ns.
-
-In this example, the values of $\lambda$ are spaced equally from 0 to 1, thus an interval of 0.05. It is typical to cluster values of $\lambda$ towards each of the end states, using a finer spacing to better resolve the energies of the fully and non-interacting states. For simplicity and in the interest of time, equal spacing is used here. As will be shown below, in this very simple case, such a $\lambda$ spacing is adequate, but this may not always be the case.
-
-The online tutorial provides a Bash script (\texttt{job.sh}) to run each of these jobs in a loop, though it is not necessary to do so. As all of the simulations are independent, it is possible to run them all simultaneously if preferred. All of the \texttt{.mdp} settings should be familiar by now, though it is important to note the use of the \texttt{sd} integrator (for "stochastic dynamics," more commonly called "Langevin dynamics"). A random frictional force is applied to all the atoms with an inverse friction coefficient specified by \texttt{tau\_t}, which has been set to 1.0 ps\textsuperscript{$-$1}, to avoid over-damping of water and subsequently artificially impacting sampling. Do not use a value smaller than 1.0 here.
-
-\subsubsection{Analysis} \label{fes_ana}
-
-Collect all of the output \texttt{md*.xvg} files from the production MD runs into one directory and execute the \texttt{bar} program:
-
-\begin{lstlisting}
-$ gmx bar -f md*.xvg -o -oi
-\end{lstlisting}
-%
-The \texttt{bar} program prints free energy differences for each $\lambda$ window to the terminal (including entropy in each window, all in units of kT). At the end of the printed information will be the final results, in kJ mol\textsuperscript{$-$1}:
-
-\begin{lstlisting}
-Final results in kJ/mol:
-
-point      0 -      1,   DG  0.19 +/-  0.00
-point      1 -      2,   DG  0.17 +/-  0.01
-point      2 -      3,   DG  0.14 +/-  0.00
-point      3 -      4,   DG  0.09 +/-  0.01
-point      4 -      5,   DG  0.06 +/-  0.00
-point      5 -      6,   DG  0.01 +/-  0.01
-point      6 -      7,   DG -0.06 +/-  0.01
-point      7 -      8,   DG -0.14 +/-  0.02
-point      8 -      9,   DG -0.23 +/-  0.01
-point      9 -     10,   DG -0.35 +/-  0.01
-point     10 -     11,   DG -0.53 +/-  0.01
-point     11 -     12,   DG -0.77 +/-  0.03
-point     12 -     13,   DG -1.12 +/-  0.03
-point     13 -     14,   DG -1.46 +/-  0.02
-point     14 -     15,   DG -1.53 +/-  0.04
-point     15 -     16,   DG -1.35 +/-  0.02
-point     16 -     17,   DG -1.04 +/-  0.01
-point     17 -     18,   DG -0.70 +/-  0.01
-point     18 -     19,   DG -0.40 +/-  0.00
-point     19 -     20,   DG -0.13 +/-  0.00
-
-total      0 -     20,   DG -9.13 +/-  0.09
-\end{lstlisting}
-
-The transformation carried out here was the disappearance of vdW terms in methane, the opposite of the vdW contribution to the solvation free energy. Converting the obtained result to kcal mol\textsuperscript{$-$1} and inverting the sign (assuming reversibility of this process), the final result is 2.18 $\pm$ 0.02 kcal mol\textsuperscript{$-$1}, in good agreement with the value obtained by Shirts et al. of 2.21 $\pm$ 0.01 kcal mol\textsuperscript{$-$1}~\cite{Shirts2003}. Small differences can be attributed to different software versions, cutoff schemes, integration algorithms, different $\lambda$ spacing, and thermostats. However, the close agreement between these two results indicates that the present approach is robust and can reproduce the known quantity sufficiently.
-
-The \texttt{-o} and \texttt{-oi} arguments produce \texttt{bar.xvg} and \texttt{barint.xvg}, the free energy differences as a function of $\lambda$ state and the integral of these free energy differences (which gives the total $\Delta$G for the transformation). It is also possible to output histograms of the free energy differences, but this output will not be discussed in this tutorial. The plot of $\Delta$G as a function of $\lambda$ is shown in Figure~\ref{free_energy_plot_bar_fig}.
-
-\begin{figure}[h!]
-\centering
-\includegraphics{free_energy_plot_bar}
-\caption{The $\Delta$G values for each $\lambda$ window, from the BAR algorithm.}
-\label{free_energy_plot_bar_fig}
-\end{figure}
-
-Note that the default $x$-axis will be integers, corresponding to the indices of the $\lambda$ vector. These values have been replaced in Figure~\ref{free_energy_plot_bar_fig} with the specific values of \texttt{vdw-lambdas} in each of these $\lambda$ vectors. Recall that no other energy terms were transformed as a function of $\lambda$, so the free energy changes are all one-dimensional, and referred to simply as $\lambda$\textsubscript{vdW} for clarity. Each value is plotted between two discrete values of $\lambda$. The BAR algorithm evaluates free energy differences between the neighboring $\lambda$ values, so the $\Delta$G values correspond to the free energy difference of a given configuration evaluated under the A- and B-state topologies (calculated every \texttt{nstdhdl} steps, see Section~\ref{fes_settings}). The plotted BAR output corresponds to $\Delta$G values between $\lambda = 0$ and $\lambda = 0.05$, $\lambda = 0.05$ and $\lambda = 0.1$, and so on.
-
-The integral of these values is plotted in Figure~\ref{free_energy_plot_barint_fig}, to accumulate $\Delta$G as a function of $\lambda$. The final value is -3.69 k\textsubscript{B}T, or -9.14 kJ mol\textsuperscript{$-$1}, since k\textsubscript{B}T = 2.478 kJ mol\textsuperscript{$-$1} at 298 K. This value agrees with the value previously printed to the terminal by the \texttt{bar} program (-9.13 kJ mol\textsuperscript{$-$1}). The values are not exactly the same because the calculation done by the \texttt{bar} program is carried out with greater precision than using just two, rounded decimal places printed to the screen.
-
-\begin{figure}[h!]
-\centering
-\includegraphics{free_energy_plot_barint}
-\caption{The cumulative $\Delta$G value (blue), plotted along with $\Delta$G values from each $\lambda$ window (black), from the BAR algorithm.}
-\label{free_energy_plot_barint_fig}
-\end{figure}
-
-\subsubsection{More Advanced Free Energy Calculations} \label{fes_advanced}
-
-Common applications of free energy calculations via MD simulation include full solvation free energies and binding free energies. To obtain $\Delta$G\textsubscript{solv} for methane, the user would simply include charges in the system topology and set up a series of \texttt{coul-lambdas} in the \texttt{.mdp} files. The \texttt{bar} program can be then called in the same manner to obtain the total value of $\Delta$G\textsubscript{solv}.
-
-Computing a binding free energy between a ligand and a protein is beyond the scope of this tutorial, but interested readers are directed to \url{http://www.alchemistry.org/wiki/Main_Page}, which has all the information necessary to perform these calculations. The most challenging aspect of these kinds of calculations is the need to restrain the ligand as it is slowly transformed. Non- or weakly interacting states of the ligand will begin to diffuse through the protein and sample totally unphysical regions of the system, inhibiting convergence of the calculations. To circumvent this problem, distance and orientational restraints can be imposed on the ligand as a function of $\lambda$. The energetic contributions of the restraints to the free energy can be corrected analytically after the simulations. An example of such a process is described by Jo et al. in their implementation of the CHARMM-GUI Ligand Binder~\cite{Jo2012}. See also references therein. The difference between the computed free energy difference from transforming the ligand in the binding site of the protein ($\Delta$G\textsubscript{complexation}) and the solvation free energy of the ligand ($\Delta$G\textsubscript{solv}) yields the binding free energy, $\Delta$G\textsubscript{bind}.
-
-\subsubsection{Summary and Review of Objectives} \label{fes_summary}
-
-This tutorial has guided the user through the process of calculating the free energy change associated with turning off vdW interactions between methane and water. The free energy change was computed with the BAR algorithm~\cite{Bennett1976}. To review, the learning objectives of the tutorial are:
-
-\begin{enumerate}
-	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
-	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
-\end{enumerate}
-
-The user was introduced to settings related to free energy in Section~\ref{fes_settings} and analysis using BAR was performed in section~\ref{fes_ana}. Several output files were plotted and their contents discussed. Interested readers may wish to refer to the Multistate BAR (MBAR) method~\cite{Shirts2008}, in which free energy differences are computed from all states. A Python implementation for MBAR is available from \url{https://github.com/choderalab/pymbar} and is fully compatible with GROMACS output. The user simply needs to increase the value of \texttt{calc\_lambda\_neighbors} in the \texttt{.mdp} file to evaluate free energy differences among all $\lambda$ states.
-
-
-
-%%%%%%%%% TUTORIAL 7 %%%%%%%%%
-\subsection{Tutorial 7: Virtual Sites} \label{vsite}
+%%%%%%%%% ADVANCED: VIRTUAL SITES %%%%%%%%%
+\subsection{Tutorial 9: Virtual Sites} \label{vsite}
 
 \begin{figure}[h]
 \centering
