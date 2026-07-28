@@ -20,13 +20,16 @@
 \usepackage{textcomp}
 %\usepackage{soul}	%% for markup in revision, to use \hl
 \usepackage{listings}
+\definecolor{light-gray}{gray}{0.95}
 \lstset{
 	basicstyle=\ttfamily,
+	backgroundcolor=\color{light-gray},
 	commentstyle={},
-	breakatwhitespace=true,
+	breakatwhitespace=false,
 	breaklines=true,
 	language=bash,
-	literate={_}{\_}1
+    	showstringspaces=false,
+	upquote=true
 }
 \DeclareSIUnit\Molar{M}
 \usepackage[italic]{mathastext}
@@ -159,7 +162,7 @@ After completing Tutorial 3, "Protein-Ligand Complex," the user should be able t
 	\item Perform analysis of interactions between a protein and a ligand
 \end{enumerate}
 
-After completing Tutorial 4, "van der Waals Transformation," the user should be able to carry out a series of simulations for the alchemical transformation of a small molecule in water. Specific learning objectives include:
+After completing Tutorial 4, "van der Waals Transformation of Methane," the user should be able to carry out a series of simulations for the alchemical transformation of a small molecule in water. Specific learning objectives include:
 \begin{enumerate}
 	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
 	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
@@ -1471,7 +1474,7 @@ The 2-propylphenol ligand principally interacts with T4 lysozyme via hydrophobic
 To compute the distance between the JZ4 phenol oxygen atom (named OAB, see Figure~\ref{jz4_fig}) and the Gln102 O$\epsilon$ atom (named OE1), execute the GROMACS \texttt{distance} program:
 
 \begin{lstlisting}
-$ gmx distance -s md_0_10.tpr -f md_0_10_center.xtc -select `resname "JZ4" and name OAB plus resid 102 and name OE1` -oall
+$ gmx distance -s md_0_10.tpr -f md_0_10_center.xtc -select 'resname "JZ4" and name OAB plus resid 102 and name OE1' -oall
 \end{lstlisting}
 %
 The \texttt{distance} program will produce a time series to \texttt{dist.xvg} and will print statistics to the terminal. The average distance is 0.43 $\pm$ 0.17 nm (4.3 $\pm$ 1.7 \AA), which is slightly longer than the typical threshold for a hydrogen bond. Over the last 5 ns of the simulation (which can be calculated by adding -b 5000 to the command above), the average distance is 0.30 $\pm$ 0.03 nm (3.0 $\pm$ 0.3 \AA), consistent with a hydrogen bond. Therefore, after some initial equilibration time, the ligand settles into a hydrogen-bonded pose, at least with respect to the distance between the two oxygen atoms.
@@ -1803,13 +1806,247 @@ The user was introduced to settings related to free energy in Section~\ref{fes_s
 \label{etoh_solv_fig}
 \end{figure}
 
-This tutorial is available online at \tutorialdgsolv.
+This tutorial assumes that the user has completed Tutorial 4 (Section~\ref{vdw}), as it builds upon those concepts by performing a complete transformation of both van der Waals and electrostatic terms in a small solute. In this case, the solute is ethanol, which has an experimentally calculated value of its hydration free energy ($\Delta$G\textsubscript{hydr}). This tutorial is available online at \tutorialdgsolv.
+
+The free energy change of transforming a system from state A to state B, $\Delta$G\textsubscript{AB}, is a function of a coupling parameter, $\lambda$, which indicates the level of change that has taken place between states A ($\lambda$ = 0) and B ($\lambda$ = 1). $\lambda$ therefore takes on values within \{0..1\} and represents the extent to which the Hamiltonian has been perturbed and the system has been transformed. The Hamiltonian at a given value of $\lambda$ is therefore a combination of the A- and B-state energy functions:
+
+\begin{equation} \label{eqn_hamiltonian_AB}
+	H(\lambda) = H^{A}(1 - \lambda) + H^{B}(\lambda)
+\end{equation}
+
+Simulations conducted at different values of $\lambda$ allow us to plot a $\partial$H/$\partial\lambda$ curve, from which $\Delta$G\textsubscript{AB} is obtained. The first step in planning free energy calculations is how many $\lambda$ points will be used to describe the transformation from state A ($\lambda$ = 0) to state B ($\lambda$ = 1), with the goal of collecting adequate data to exhaustively sample phase space and produce a reliable $\partial$H/$\partial\lambda$ curve.
+
+For decoupling Coulombic interactions, which depend linearly upon $\lambda$, an equidistant $\lambda$ spacing from 0 to 1 should usually suffice, with $\lambda$ spacing values of of 0.05-0.1 being common. Note that this is a broad generalization, and in fact many molecules will require a great deal more finesse, such as those that interact very strongly with the surrounding environment through hydrogen bonding. In this case, $\lambda$ spacing may need to be decreased, such that more points are used, perhaps even in an asymmetric fashion.
+
+For decoupling van der Waals interactions, $\lambda$ spacing can be much trickier. A larger number of $\lambda$ points may be necessary to properly describe the transformation. Clustering $\lambda$ points in regions where the slope of the $\partial$H/$\partial\lambda$ curve is steep may be necessary. For the purposes of this tutorial, we will use equidistant $\lambda$ spacing of 0.05, but in many cases, one may need to use different spacing, especially clustering values in the range of 0.6 $\le \lambda \le$ 0.8.
+
+\subsubsection{Prepare the System} \label{dgsolv_prep}
+
+(get CHARMM FF)
+
+(get EtOH coords from website)
+
+\begin{lstlisting}
+$ gmx pdb2gmx -f etoh.pdb -o etoh.gro -p topol.top
+$ gmx editconf -f etoh.gro -o etoh_box.gro -c -box 4.0
+$ gmx solvate -cp etoh_box.gro -cs spc216.gro -o etoh_solv.gro -p topol.top
+\end{lstlisting}
+
+\subsubsection{Run the Free Energy Calculations} \label{dgsolv_run}
+
+For these calculations, we will perform a series of 31 simulations, first transforming the Coulombic terms (such that charges on each atom are zero), then transforming the Lennard-Jones terms. It is critical that van der Waals interactions not be perturbed for atoms with partial charge. If repulsive Lennard-Jones terms are removed, charges will collapse in on themselves, resulting in a numerical singularity (infinite force) and the simulation will crash. Therefore, only once charges have been ``turned off'' in the first set of $\lambda$ states, it is safe to transform the Lennard-Jones terms. Refer to the input set of $\lambda$ vectors in the online tutorial to see the exact configuration of $\lambda$ states for each type of interaction.
+
+As in Tutorial 4 (Section~\ref{vdw}), the free energy calculations will be performed as a series of simulations, with the output of the previous $\lambda$ state serving as the input for the current $\lambda$ state. The Bash script that performs these simulations is given below.
+
+\begin{lstlisting}
+#!/bin/bash
+
+FREE_ENERGY=`pwd`
+MDP=$FREE_ENERGY/MDP
+
+for (( i=0; i<31; i++ ))
+do
+    lambda=$i
+    prevlambda="$(($i - 1))"
+
+    mkdir Lambda_$lambda
+    cd Lambda_$lambda
+
+    coorfile=$FREE_ENERGY/etoh_solv.gro
+    if [[ $i -gt 1 ]]; then
+        coorfile=$FREE_ENERGY/Lambda_$prevlambda/Production_MD/md$prevlambda.gro
+    fi
+
+    #################################
+    # ENERGY MINIMIZATION 1: STEEP  #
+    #################################
+    echo "Starting minimization for lambda = $LAMBDA..."
+
+    mkdir EM
+    cd EM
+
+    # Iterative calls to grompp and mdrun to run the simulations
+    gmx grompp -f $MDP/em_steep_$LAMBDA.mdp -c $coorfile  -p $FREE_ENERGY/topol.top -o min$LAMBDA.tpr
+    gmx mdrun -deffnm min$LAMBDA
+    echo "Minimization complete."
+
+    #####################
+    # NVT EQUILIBRATION #
+    #####################
+    echo "Starting constant volume equilibration..."
+
+    cd ../
+    mkdir NVT
+    cd NVT
+
+    gmx grompp -f $MDP/nvt_$LAMBDA.mdp -c ../EM/min$LAMBDA.gro -p $FREE_ENERGY/topol.top -o nvt$LAMBDA.tpr
+    gmx mdrun -deffnm nvt$LAMBDA
+    echo "Constant volume equilibration complete."
+
+    #####################
+    # NPT EQUILIBRATION #
+    #####################
+    echo "Starting constant pressure equilibration..."
+
+    cd ../
+    mkdir NPT
+    cd NPT
+
+    gmx grompp -f $MDP/npt_$LAMBDA.mdp -c ../NVT/nvt$LAMBDA.gro -p $FREE_ENERGY/topol.top -t ../NVT/nvt$LAMBDA.cpt -o npt$LAMBDA.tpr
+    gmx mdrun -deffnm npt$LAMBDA
+    echo "Constant pressure equilibration complete."
+
+    #################
+    # PRODUCTION MD #
+    #################
+    echo "Starting production MD simulation..."
+
+    cd ../
+    mkdir Production_MD
+    cd Production_MD
+
+    gmx grompp -f $MDP/md_$LAMBDA.mdp -c ../NPT/npt$LAMBDA.gro -p $FREE_ENERGY/topol.top -t ../NPT/npt$LAMBDA.cpt -o md$LAMBDA.tpr
+    gmx mdrun -deffnm md$LAMBDA
+    echo "Production MD complete."
+
+    echo "Ending. Job completed for lambda = $lambda"
+
+    cd $FREE_ENERGY
+done
+
+exit;
+\end{lstlisting}
+
+To calculate the value of $\Delta$G\textsubscript{hydr}, again invoke \texttt{gmx bar} on the resulting \texttt{*.xvg} files from each production MD simulation. The result will look something like:
+
+\begin{lstlisting}
+Final results in kJ/mol:
+
+point      0 -      1,   DG  6.26 +/-  0.02
+point      1 -      2,   DG  5.26 +/-  0.01
+point      2 -      3,   DG  4.28 +/-  0.04
+point      3 -      4,   DG  3.37 +/-  0.04
+point      4 -      5,   DG  2.56 +/-  0.02
+point      5 -      6,   DG  1.89 +/-  0.02
+point      6 -      7,   DG  1.34 +/-  0.01
+point      7 -      8,   DG  0.89 +/-  0.01
+point      8 -      9,   DG  0.49 +/-  0.01
+point      9 -     10,   DG  0.16 +/-  0.01
+point     10 -     11,   DG  0.68 +/-  0.00
+point     11 -     12,   DG  0.64 +/-  0.01
+point     12 -     13,   DG  0.61 +/-  0.01
+point     13 -     14,   DG  0.56 +/-  0.01
+point     14 -     15,   DG  0.48 +/-  0.01
+point     15 -     16,   DG  0.43 +/-  0.01
+point     16 -     17,   DG  0.35 +/-  0.01
+point     17 -     18,   DG  0.26 +/-  0.01
+point     18 -     19,   DG  0.15 +/-  0.01
+point     19 -     20,   DG -0.02 +/-  0.01
+point     20 -     21,   DG -0.27 +/-  0.02
+point     21 -     22,   DG -0.54 +/-  0.02
+point     22 -     23,   DG -0.90 +/-  0.03
+point     23 -     24,   DG -1.40 +/-  0.06
+point     24 -     25,   DG -1.94 +/-  0.05
+point     25 -     26,   DG -2.36 +/-  0.07
+point     26 -     27,   DG -2.25 +/-  0.05
+point     27 -     28,   DG -1.70 +/-  0.02
+point     28 -     29,   DG -1.06 +/-  0.01
+point     29 -     30,   DG -0.41 +/-  0.01
+
+total      0 -     30,   DG 17.80 +/-  0.20
+\end{lstlisting}
+
+Assuming reversibility, the result means that $\Delta$G\textsubscript{hydr} = -17.8 $\pm$ 0.2 kJ mol\textsuperscript{-1}, or 4.25 $\pm$ 0.05 kcal mol\textsuperscript{-1}. This value differs slightly from the experimental value of -5.01 kcal mol\textsuperscript{-1}~\cite{Kelly2005} and the reported CHARMM22 value of -5.34 $\pm$ 0.12 kcal mol\textsuperscript{-1}~\cite{Anisimov2007}. Deviations are likely due to the fact that the topology used here came from the CGenFF parameter set, rather than the ethanol model compound optimized for the CHARMM protein force field; there are minor differences in partial charge assignments and Lennard-Jones parameters of the constituent atom types.
+
+\subsubsection{Summary and Review of Objectives} \label{dgsolv_summary}
 
 %%%%%%%%% ADVANCED: PROTEIN-LIGAND BINDING FREE ENERGY %%%%%%%%%
 
 \subsection{Tutorial 6: Protein-Ligand Binding Free Energy} \label{dgbind}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{t4_lyso_bzf}
+\caption{The T4 lysozyme-inhibitor complex.}
+\label{t4_bzf_fig}
+\end{figure}
+
 This tutorial is available online at \tutorialdgbind.
+
+\subsubsection{Prepare the Ligand Coordinates} \label{dgbind_prepare}
+
+\begin{lstlisting}
+$ grep BZF 182L.pdb > bzf.pdb
+\end{lstlisting}
+
+(add H in Avogadro) --> bzf\_h.pdb
+(rename atoms according to CGenFF - ZFUR)
+
+\begin{lstlisting}
+$ grep "ATOM" 182L.pdb | grep -v "BZF" > 182l_protein.pdb
+$ cp 182l_protein.pdb complex.pdb
+$ echo "TER" >> complex.pdb
+$ grep "ATOM" bzf_h.pdb >> complex.pdb
+$ echo "END" >> complex.pdb
+\end{lstlisting}
+
+\subsubsection{Build the Protein-Ligand Complex} \label{dgbind_complex}
+
+\begin{lstlisting}
+$ gmx pdb2gmx -f complex.pdb -o complex_processed.pdb
+\end{lstlisting}
+
+\subsubsection{Build Ligand Virtual Sites} \label{dgbind_vsites}
+
+\begin{lstlisting}
+$ python3 write_vsites.py -incrd bzf_h.pdb -intop topol.top -initp topol_Other_chain_A2.itp -sele all,O1:C2:C3:C4:C9,C4:C5:C6:C7:C8:C9
+\end{lstlisting}
+
+(Copy new LP coordinates into complex\_processed.pdb, move forward with topol\_vsite.top and modified complex\_processed.pdb)
+
+(Insert figure of ZFUR ligand with labeled virtual sites)
+
+\subsubsection{Solvate and Prepare the Complex} \label{dgbind_prep}
+
+\begin{lstlisting}
+$ gmx editconf -f complex_processed.pdb -o box.pdb -c -d 1.0 -bt dodecahedron
+$ gmx solvate -cp box.pdb -cs spc216.gro -p topol_vsite.top -o solv.pdb
+$ gmx grompp -f inputs/ions.mdp -c solv.pdb -p topol_vsite.top -o ions.tpr
+$ gmx genion -s ions.tpr -o solv_ions.pdb -p topol_vsite.top -pname NA -nname CL -neutral
+\end{lstlisting}
+
+\subsubsection{Set Up Orientation Restraints} \label{dgbind_restraints}
+
+\begin{lstlisting}
+$ python3 detect_sites.py
+\end{lstlisting}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{complex_dist_restraint}
+\caption{The distance restraint applied in the complex.}
+\label{t4_bzf_dist_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{complex_angle_restraints}
+\caption{The angle restraints applied in the complex.}
+\label{t4_bzf_angle_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{complex_dihedral_restraints}
+\caption{The dihedral restraints applied in the complex.}
+\label{t4_bzf_dihe_fig}
+\end{figure}
+
+\subsubsection{Run Complex Free Energy Calculations} \label{dgbind_run}
+
+\subsubsection{Run Solution Free Energy Calculations} \label{dgbind_run_solv}
+
+\subsubsection{Summary and Review of Objectives} \label{dgbind_summary}
 
 %%%%%%%%% ADVANCED: UMBRELLA SAMPLING %%%%%%%%%
 \subsection{Tutorial 7: Umbrella Sampling} \label{pmf}
