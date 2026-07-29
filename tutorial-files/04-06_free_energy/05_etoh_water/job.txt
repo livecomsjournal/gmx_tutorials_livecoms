@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Set some environment variables 
+FREE_ENERGY=`pwd`
+echo "Free energy home directory set to $FREE_ENERGY"
+MDP=$FREE_ENERGY/MDP
+echo ".mdp files are stored in $MDP"
+
+# Change to the location of your GROMACS-2018 installation
+GMX=/usr/local/gromacs/bin
+
+for (( i=0; i<31; i++ ))
+do
+    lambda=$i
+    prevlambda="$(($i - 1))"
+
+    # A new directory will be created for each value of lambda and
+    # at each step in the workflow for maximum organization.
+
+    mkdir Lambda_$lambda
+    cd Lambda_$lambda
+
+    coorfile=$FREE_ENERGY/etoh_solv.gro
+    if [[ $i -gt 1 ]]; then
+        coorfile=$FREE_ENERGY/Lambda_$prevlambda/Production_MD/md$prevlambda.gro
+    fi
+
+    ##############################
+    # ENERGY MINIMIZATION STEEP  #
+    ##############################
+    echo "Starting minimization for lambda = $lambda..." 
+
+    mkdir EM
+    cd EM
+
+    # Iterative calls to grompp and mdrun to run the simulations
+
+    $GMX/gmx grompp -f $MDP/em_steep_$lambda.mdp -c $coorfile -p $FREE_ENERGY/topol.top -o min$lambda.tpr
+
+    $GMX/gmx mdrun -deffnm min$lambda
+
+    sleep 10
+
+    #####################
+    # NVT EQUILIBRATION #
+    #####################
+    echo "Starting constant volume equilibration..."
+
+    cd ../
+    mkdir NVT
+    cd NVT
+
+    $GMX/gmx grompp -f $MDP/nvt_$lambda.mdp -c ../EM/min$lambda.gro -p $FREE_ENERGY/topol.top -o nvt$lambda.tpr
+
+    $GMX/gmx mdrun -deffnm nvt$lambda
+
+    echo "Constant volume equilibration complete."
+
+    sleep 10
+
+    #####################
+    # NPT EQUILIBRATION #
+    #####################
+    echo "Starting constant pressure equilibration..."
+
+    cd ../
+    mkdir NPT
+    cd NPT
+
+    $GMX/gmx grompp -f $MDP/npt_$lambda.mdp -c ../NVT/nvt$lambda.gro -p $FREE_ENERGY/topol.top -t ../NVT/nvt$lambda.cpt -o npt$lambda.tpr
+
+    $GMX/gmx mdrun -deffnm npt$lambda
+
+    echo "Constant pressure equilibration complete."
+
+    sleep 10
+
+    #################
+    # PRODUCTION MD #
+    #################
+    echo "Starting production MD simulation..."
+
+    cd ../
+    mkdir Production_MD
+    cd Production_MD
+
+    $GMX/gmx grompp -f $MDP/md_$lambda.mdp -c ../NPT/npt$lambda.gro -p $FREE_ENERGY/topol.top -t ../NPT/npt$lambda.cpt -o md$lambda.tpr
+
+    $GMX/gmx mdrun -deffnm md$lambda
+
+    echo "Production MD complete."
+
+    # End
+    echo "Ending. Job completed for lambda = $lambda"
+
+    cd $FREE_ENERGY
+done
+
+exit;
