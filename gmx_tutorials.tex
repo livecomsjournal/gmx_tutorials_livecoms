@@ -18,6 +18,8 @@
 \usepackage[version=4]{mhchem}
 \usepackage{siunitx}
 \usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{xcolor}
 %\usepackage{soul}	%% for markup in revision, to use \hl
 \usepackage{listings}
 \definecolor{light-gray}{gray}{0.95}
@@ -141,7 +143,7 @@ The seven tutorials presented here range in difficulty from basic to advanced, r
 
 After completing Tutorial 1, "Lysozyme in Water," the user should be able to build a solvated protein system and carry out a short MD simulation. Specific learning objectives include:
 \begin{enumerate}
-	\item Understand the content of a GROMACS system topology
+	\item Describe the content of a GROMACS system topology
 	\item Carry out basic steps of setting up a periodic system, including solvation and adding ions
 	\item Identify keywords and typical settings in \texttt{.mdp} input files
 	\item Control position restraints and topology directives via \texttt{.mdp} settings
@@ -150,7 +152,7 @@ After completing Tutorial 1, "Lysozyme in Water," the user should be able to bui
 
 After completing Tutorial 2, "KALP\textsubscript{15} in DPPC," the user should be able to build a simple membrane-protein system containing one lipid type. Specific learning objectives include:
 \begin{enumerate}
-	\item Understand the organization and contents of GROMACS force field files and how parameters from different, but compatible, sources can be added to them
+	\item Interpret the contents and organization of GROMACS force field files and how parameters from different, but compatible, sources can be added to them
 	\item Apply an iterative packing routine to place phospholipids around a transmembrane protein
 	\item Perform lipid-specific analysis using custom index groups
 \end{enumerate}
@@ -164,28 +166,29 @@ After completing Tutorial 3, "Protein-Ligand Complex," the user should be able t
 
 After completing Tutorial 4, "van der Waals Transformation of Methane," the user should be able to carry out a series of simulations for the alchemical transformation of a small molecule in water. Specific learning objectives include:
 \begin{enumerate}
-	\item Understand the purpose of \texttt{.mdp} keywords related to free energy calculations
+	\item Define the roles of \texttt{.mdp} keywords related to free energy calculations
 	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
 \end{enumerate}
 
-After completing Tutorial 5, "Ethanol Hydration Free Energy,'" the user should be able to...
+After completing Tutorial 5, "Ethanol Hydration Free Energy,'" the user should be able to perform a complete alchemical transformation of a small molecule in water, including both van der Waals and electrostatic terms. Specific learning objectives include:
 \begin{enumerate}
-	\item
-	\item
+	\item Define $\lambda$-spacing for Coulombic and Lennard-Jones terms
+	\item Compute the value of $\Delta$G\textsubscript{hydr} for a polar molecule
 \end{enumerate}
 
 After completing Tutorial 6, "Protein-Ligand Binding Free Energy," the user should be able to...
 \begin{enumerate}
-	\item
-	\item
+	\item Construct ligand virtual sites that are used to reflect the ligand internal geometry and binding pose
+	\item Employ orientation restraints in a protein-ligand complex
+	\item Calculate $\Delta$G\textsubscript{bind} after a separate alchemical transformation in water
 \end{enumerate}
 
 After completing Tutorial 7, "Umbrella Sampling," the user should be able to perform simulations under the influence of a biasing potential. Specific learning objectives include:
 \begin{enumerate}
 	\item Apply \texttt{.mdp} keywords that invoke the pull code to add a simple, one-dimensional biasing potential to selected atoms in a system
-	\item Define what is meant by a "reaction coordinate" and how to construct a suitable one
+	\item Define "reaction coordinate" and determine how to construct a suitable one
 	\item Perform restrained simulations in multiple sampling windows along a reaction coordinate
-	\item Compute a potential of mean force profile
+	\item Compute a potential of mean force profile, including appropriate corrections for volume entropy effects
 \end{enumerate}
 
 After completing Tutorial 8, "Biphasic Systems," the user should be able to construct heterogeneous systems of two different liquids. Specific learning objectives include:
@@ -275,7 +278,7 @@ $ gmx pdb2gmx -f 1AKI_clean.pdb -o 1AKI_processed.gro -water tip3p
 \end{lstlisting}
 %
 
-An all-atom force field is used here for simplicity rather than introducing concepts of implicit hydrogen atoms as in united-atom force fields or coarse-grain representations. In principle, many of the force fields provided with GROMACS would be adequate for the purposes of this tutorial. The next choice the user must make is the water model that is to be used. In the tutorial, the \texttt{-water} argument is invoked from \texttt{pdb2gmx} to select the SPC/E water mode~\cite{Berendsen1987}; if this option is not given on the command line, the user is prompted for an interactive choice. The water model is another important consideration, though one over which the user has less freedom. Each force field was parametrized for use with a specific water model. Therefore, the user is not entirely free to choose whichever model happens to be available without due consideration. GROMACS provides a suggested water model for each force field; unless there is good evidence to choose another model, the user should follow this recommendation for greatest accuracy. However, some studies have shown that different biomolecular force fields may be accurately combined with other water models, as is the case in this tutorial. The CHARMM36 force field was originally parametrized for use with the TIP3P water model~\cite{Jorgensen1983}, with subsequent modifications by other investigations; these modifications have resulted in the so-called ``CHARMM-modified TIP3P,'' which is the default water model invoked with \texttt{-water tip3p}. In the absence of any sufficiently strong justification or precedent, the user should always choose the recommended water model listed by \texttt{pdb2gmx}.
+An all-atom force field is used here for simplicity rather than introducing concepts of implicit hydrogen atoms as in united-atom force fields or coarse-grain representations. In principle, many of the force fields provided with GROMACS would be adequate for the purposes of this tutorial. The next choice the user must make is the water model that is to be used. In the tutorial, the \texttt{-water} argument is invoked from \texttt{pdb2gmx} to select the SPC/E water mode~\cite{Berendsen1987}; if this option is not given on the command line, the user is prompted for an interactive choice. The water model is another important consideration, though one over which the user has less freedom. Each force field was parametrized for use with a specific water model. Therefore, the user is not entirely free to choose whichever model happens to be available without due consideration. GROMACS provides a suggested water model for each force field; unless there is good evidence to choose another model, the user should follow this recommendation for greatest accuracy. However, some studies have shown that different biomolecular force fields may be accurately combined with other water models, as is the case in this tutorial. The CHARMM36 force field was originally parametrized for use with the TIP3P water model~\cite{Jorgensen1983}, with subsequent modifications by other investigations~\cite{Durell1994,Neria1996}; these modifications have resulted in the so-called ``CHARMM-modified TIP3P,'' which is the default water model invoked with \texttt{-water tip3p}. In the absence of any sufficiently strong justification or precedent, the user should always choose the recommended water model listed by \texttt{pdb2gmx}.
 
 Often, new users are confused at having to choose a water model at this stage, particularly in the case that their provided coordinate file only contains a biomolecule such as a protein. The water model selection is planning for the subsequent steps, in which this solute is hydrated and a force field choice should be made ahead of time. By selecting the water model at this first step, \texttt{pdb2gmx} can write a complete topology that will describe all the species that will be included in the system being built.
 
@@ -1606,7 +1609,7 @@ In Section~\ref{pmf}, the concept of computing a free energy difference along a 
 
 That is, for every configuration generated in state A, the energy of the system is also evaluated in state B, from which the free energy difference, $\Delta$G, is calculated. This approach is called free energy perturbation (FEP). The drawback to the approach is that convergence is difficult unless the difference between the two states is small. For "mutation" of one molecule into another, or to transform a molecule from a fully interacting to a non-interacting state, this approach may fail to converge. In practice, such a calculation of a free energy difference is actually a series of MD simulations, in which the molecule of interest progressively has its topology changed from state A to state B as a function of a discrete coupling factor, $\lambda$. In these simulations, the Hamiltonian $H(\mathbf{r}, \mathbf{p})$ in terms of atomic coordinates ($\mathbf{r}$) and momenta ($\mathbf{p}$) is extended to include $\lambda$, {\em e.g.} $H(\mathbf{r}, \mathbf{p}; \lambda)$. For a given value of $\lambda$ (which takes values from 0 to 1, indicating fully in the A-state and fully in the B-state, respectively), the Hamiltonian of the system is expressed as:
 
-\begin{equation} \label{fes_hamiltonian_eq}
+\begin{equation} \label{vdw_hamiltonian_eq}
 H(\mathbf{r},\mathbf{p};\lambda) = (1 - \lambda) H^A(\mathbf{r},\mathbf{p}) + \lambda H^B(\mathbf{r},\mathbf{p})
 \end{equation}
 
@@ -1652,7 +1655,7 @@ which, when used in Equation~\ref{bar_general_eq}, and solving iteratively after
 
 This tutorial (available online at \tutorialvdw) will guide the user through the calculation of the free energy change associated with removing van der Waals interactions of methane with water (Figure~\ref{free_energy_methane_water_fig}) using the BAR algorithm, implemented in GROMACS as the \texttt{bar} program. This quantity is part of the total transformation of methane that would be used to compute the complete free energy of solvation, $\Delta$G\textsubscript{solv}. This quantity has been rigorously calculated by Shirts et al. using the TI method~\cite{Shirts2003}.
 
-\subsubsection{System Contents} \label{fes_top}
+\subsubsection{System Contents} \label{vdw_top}
 
 The system considered here contains a single methane (CH\textsubscript4) molecule solvated in 596 water molecules (Figure~\ref{free_energy_methane_water_fig}). The OPLS-AA force field~\cite{Kaminski2001} is used to describe methane and TIP3P~\cite{Jorgensen1983} is the water model. The coordinate and topology files for the system are available from the online version of this tutorial. A brief description of the topology contents is warranted here. The following describes the methane \texttt{[moleculetype]}:
 
@@ -1672,7 +1675,7 @@ Methane                      3
 
 The residue is named "ALAB," from the $\beta$-carbon of alanine, for which methane serves as a model compound. All of the charges on the atoms are set to zero, though strictly speaking, it is not necessary to do so. This tutorial will only consider the van der Waals transformation (that is, turning off Lennard-Jones interactions as a function of $\lambda$). In past versions of GROMACS (e.g. 4.0 and earlier), to do such a transformation would have required a topology with the form shown here, so that Coulombic interactions are not included. As will be explained below, charges can be present in the topology but also ignored. Should the user wish to perform a full transformation to calculate $\Delta$G\textsubscript{solv}, appropriate charges for all H atoms are +0.060 and -0.240 for the C atom. The topology shown here corresponds to the A-state of the molecule, such that it is fully interacting with its environment. It is also not necessary to specify a B-state in the topology (as was the case in past GROMACS versions, as well) since the transformation of nonbonded terms is controlled entirely in the \texttt{.mdp} file. A relative free energy calculation, in which one molecule is "mutated" to another, does require explicit B-state parameters (atom types and charges) to be set. Such a calculation is beyond the scope of this tutorial.
 
-\subsubsection{Free Energy Settings} \label{fes_settings}
+\subsubsection{Free Energy Settings} \label{vdw_settings}
 
 Every \texttt{.mdp} file used in this tutorial has a section with the following form:
 
@@ -1716,7 +1719,7 @@ The \texttt{sc-alpha} keyword sets the value of $\alpha$ in Equation~\ref{sc_eq}
 
 The last setting in this section of the \texttt{.mdp} file, \texttt{nstdhdl}, simply specifies the interval (in number of time steps) for writing the values of $\frac{\partial H(\lambda)}{\partial \lambda}$ to the output file.
 
-\subsubsection{Workflow} \label{fes_workflow}
+\subsubsection{Workflow} \label{vdw_workflow}
 
 The calculation of $\Delta$G for removing vdW interactions between methane and water will be carried out in 21 individual simulations, one for each of the $\lambda$ vectors defined in the \texttt{.mdp} files. Preceding each production simulation, the system will be energy-minimized, then equilibrated under an $NVT$ and then an $NPT$ ensemble for 100 ps each. Following these preparation steps, the production MD simulations (during which data are collected) will be carried out for 1 ns.
 
@@ -1724,7 +1727,7 @@ In this example, the values of $\lambda$ are spaced equally from 0 to 1, thus an
 
 The online tutorial provides a Bash script (\texttt{job.sh}) to run each of these jobs in a loop, though it is not necessary to do so. As all of the simulations are independent, it is possible to run them all simultaneously if preferred. All of the \texttt{.mdp} settings should be familiar by now, though it is important to note the use of the \texttt{sd} integrator (for "stochastic dynamics," more commonly called "Langevin dynamics"). A random frictional force is applied to all the atoms with an inverse friction coefficient specified by \texttt{tau\_t}, which has been set to 1.0 ps\textsuperscript{$-$1}, to avoid over-damping of water and subsequently artificially impacting sampling. Do not use a value smaller than 1.0 here.
 
-\subsubsection{Analysis} \label{fes_ana}
+\subsubsection{Analysis} \label{vdw_ana}
 
 Collect all of the output \texttt{md*.xvg} files from the production MD runs into one directory and execute the \texttt{bar} program:
 
@@ -1772,7 +1775,7 @@ The \texttt{-o} and \texttt{-oi} arguments produce \texttt{bar.xvg} and \texttt{
 \label{free_energy_plot_bar_fig}
 \end{figure}
 
-Note that the default $x$-axis will be integers, corresponding to the indices of the $\lambda$ vector. These values have been replaced in Figure~\ref{free_energy_plot_bar_fig} with the specific values of \texttt{vdw-lambdas} in each of these $\lambda$ vectors. Recall that no other energy terms were transformed as a function of $\lambda$, so the free energy changes are all one-dimensional, and referred to simply as $\lambda$\textsubscript{vdW} for clarity. Each value is plotted between two discrete values of $\lambda$. The BAR algorithm evaluates free energy differences between the neighboring $\lambda$ values, so the $\Delta$G values correspond to the free energy difference of a given configuration evaluated under the A- and B-state topologies (calculated every \texttt{nstdhdl} steps, see Section~\ref{fes_settings}). The plotted BAR output corresponds to $\Delta$G values between $\lambda = 0$ and $\lambda = 0.05$, $\lambda = 0.05$ and $\lambda = 0.1$, and so on.
+Note that the default $x$-axis will be integers, corresponding to the indices of the $\lambda$ vector. These values have been replaced in Figure~\ref{free_energy_plot_bar_fig} with the specific values of \texttt{vdw-lambdas} in each of these $\lambda$ vectors. Recall that no other energy terms were transformed as a function of $\lambda$, so the free energy changes are all one-dimensional, and referred to simply as $\lambda$\textsubscript{vdW} for clarity. Each value is plotted between two discrete values of $\lambda$. The BAR algorithm evaluates free energy differences between the neighboring $\lambda$ values, so the $\Delta$G values correspond to the free energy difference of a given configuration evaluated under the A- and B-state topologies (calculated every \texttt{nstdhdl} steps, see Section~\ref{vdw_settings}). The plotted BAR output corresponds to $\Delta$G values between $\lambda = 0$ and $\lambda = 0.05$, $\lambda = 0.05$ and $\lambda = 0.1$, and so on.
 
 The integral of these values is plotted in Figure~\ref{free_energy_plot_barint_fig}, to accumulate $\Delta$G as a function of $\lambda$. The final value is -3.69 k\textsubscript{B}T, or -9.14 kJ mol\textsuperscript{$-$1}, since k\textsubscript{B}T = 2.478 kJ mol\textsuperscript{$-$1} at 298 K. This value agrees with the value previously printed to the terminal by the \texttt{bar} program (-9.13 kJ mol\textsuperscript{$-$1}). The values are not exactly the same because the calculation done by the \texttt{bar} program is carried out with greater precision than using just two, rounded decimal places printed to the screen.
 
@@ -1783,7 +1786,7 @@ The integral of these values is plotted in Figure~\ref{free_energy_plot_barint_f
 \label{free_energy_plot_barint_fig}
 \end{figure}
 
-\subsubsection{Summary and Review of Objectives} \label{fes_summary}
+\subsubsection{Summary and Review of Objectives} \label{vdw_summary}
 
 This tutorial has guided the user through the process of calculating the free energy change associated with turning off vdW interactions between methane and water. The free energy change was computed with the BAR algorithm~\cite{Bennett1976}. To review, the learning objectives of the tutorial are:
 
@@ -1792,7 +1795,7 @@ This tutorial has guided the user through the process of calculating the free en
 	\item Use the Bennett Acceptance Ratio method to compute the free energy difference of the transformation of van der Waals terms
 \end{enumerate}
 
-The user was introduced to settings related to free energy in Section~\ref{fes_settings} and analysis using BAR was performed in section~\ref{fes_ana}. Several output files were plotted and their contents discussed. Interested readers may wish to refer to the Multistate BAR (MBAR) method~\cite{Shirts2008}, in which free energy differences are computed from all states. A Python implementation for MBAR is available from \url{https://github.com/choderalab/pymbar} and is fully compatible with GROMACS output. The user simply needs to increase the value of \texttt{calc\_lambda\_neighbors} in the \texttt{.mdp} file to evaluate free energy differences among all $\lambda$ states.
+The user was introduced to settings related to free energy in Section~\ref{vdw_settings} and analysis using BAR was performed in section~\ref{vdw_ana}. Several output files were plotted and their contents discussed. Interested readers may wish to refer to the Multistate BAR (MBAR) method~\cite{Shirts2008}, in which free energy differences are computed from all states. A Python implementation for MBAR is available from \url{https://github.com/choderalab/pymbar} and is fully compatible with GROMACS output. The user simply needs to increase the value of \texttt{calc\_lambda\_neighbors} in the \texttt{.mdp} file to evaluate free energy differences among all $\lambda$ states.
 
 
 %%%%%%%%% ADVANCED: FREE ENERGY OF SOLVATION %%%%%%%%%
@@ -1816,18 +1819,18 @@ The free energy change of transforming a system from state A to state B, $\Delta
 
 Simulations conducted at different values of $\lambda$ allow us to plot a $\partial$H/$\partial\lambda$ curve, from which $\Delta$G\textsubscript{AB} is obtained. The first step in planning free energy calculations is how many $\lambda$ points will be used to describe the transformation from state A ($\lambda$ = 0) to state B ($\lambda$ = 1), with the goal of collecting adequate data to exhaustively sample phase space and produce a reliable $\partial$H/$\partial\lambda$ curve.
 
-For decoupling Coulombic interactions, which depend linearly upon $\lambda$, an equidistant $\lambda$ spacing from 0 to 1 should usually suffice, with $\lambda$ spacing values of of 0.05-0.1 being common. Note that this is a broad generalization, and in fact many molecules will require a great deal more finesse, such as those that interact very strongly with the surrounding environment through hydrogen bonding. In this case, $\lambda$ spacing may need to be decreased, such that more points are used, perhaps even in an asymmetric fashion.
+For decoupling Coulombic interactions, which depend linearly upon $\lambda$, an equidistant $\lambda$ spacing from 0 to 1 should usually suffice, with $\lambda$ spacing values of of 0.05 $-$ 0.1 being common. Note that this is a broad generalization, and in fact many molecules will require a great deal more finesse, such as those that interact very strongly with the surrounding environment through hydrogen bonding. In this case, $\lambda$ spacing may need to be decreased, such that more points are used, perhaps even in an asymmetric fashion.
 
 For decoupling van der Waals interactions, $\lambda$ spacing can be much trickier. A larger number of $\lambda$ points may be necessary to properly describe the transformation. Clustering $\lambda$ points in regions where the slope of the $\partial$H/$\partial\lambda$ curve is steep may be necessary. For the purposes of this tutorial, we will use equidistant $\lambda$ spacing of 0.05, but in many cases, one may need to use different spacing, especially clustering values in the range of 0.6 $\le \lambda \le$ 0.8.
 
 \subsubsection{Prepare the System} \label{dgsolv_prep}
 
-(get CHARMM FF)
+The system used for this tutorial is a single molecule of ethanol solvated in explicit water. The force field to be used is CHARMM, specifically the CHARMM General Force Field (CGenFF)~\cite{Vanommeslaeghe2010} for the ethanol solute and the CHARMM-modified TIP3P water model~\cite{Jorgensen1983,Durell1994,Neria1996} for the solvent. Download the CHARMM36 force field in GROMACS format from \url{http://mackerell.umaryland.edu/charmm_ff.shtml#gromacs}.
 
-(get EtOH coords from website)
+The coordinates for ethanol are provided in PDB format in the online version of the tutorial and with the files that accompany this article. Given that ethanol is a core model compound in CGenFF, the user can produce its topology directly using \texttt{pdb2gmx} and subsequently solvate it in a 4-nm (40-\AA) cubic box of TIP3P water with the following commands:
 
 \begin{lstlisting}
-$ gmx pdb2gmx -f etoh.pdb -o etoh.gro -p topol.top
+$ gmx pdb2gmx -f etoh.pdb -o etoh.gro -p topol.top -water tip3p
 $ gmx editconf -f etoh.gro -o etoh_box.gro -c -box 4.0
 $ gmx solvate -cp etoh_box.gro -cs spc216.gro -o etoh_solv.gro -p topol.top
 \end{lstlisting}
@@ -1960,6 +1963,15 @@ Assuming reversibility, the result means that $\Delta$G\textsubscript{hydr} = -1
 
 \subsubsection{Summary and Review of Objectives} \label{dgsolv_summary}
 
+This tutorial guided the user through the process of a complete alchemical transformation of a small molecule in water, including transformation of both Coulombic and Lennard-Jones terms. To review, the learning objectives of this tutorial are:
+
+\begin{enumerate}
+	\item Define $\lambda$-spacing for Coulombic and Lennard-Jones terms
+	\item Compute the value of $\Delta$G\textsubscript{hydr} for a polar molecule
+\end{enumerate}
+
+The user was provided relevant context about $\lambda$-spacing in Section~\ref{dgsolv}, including discussion of the linear dependence of electrostatic terms on $\lambda$ and the need for tighter $\lambda$ spacing that is sometimes necessary during transformation of van der Waals terms. The value of $\Delta$G\textsubscript{hydr} was calculated in Section~\ref{dgsolv_run}, using the BAR method employed as in Tutorial 4 (Section~\ref{vdw_ana}).
+
 %%%%%%%%% ADVANCED: PROTEIN-LIGAND BINDING FREE ENERGY %%%%%%%%%
 
 \subsection{Tutorial 6: Protein-Ligand Binding Free Energy} \label{dgbind}
@@ -2031,125 +2043,130 @@ $ python3 detect_sites.py
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\columnwidth]{complex_angle_restraints}
-\caption{The angle restraints applied in the complex.}
+\caption{One of the two angle restraints applied in the complex.}
 \label{t4_bzf_angle_fig}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\columnwidth]{complex_dihedral_restraints}
-\caption{The dihedral restraints applied in the complex.}
+\caption{One of the two dihedral restraints applied in the complex.}
 \label{t4_bzf_dihe_fig}
 \end{figure}
 
 \subsubsection{Run Complex Free Energy Calculations} \label{dgbind_run}
 
+(job.sh script, basically the same idea as previous tutorials, note the use of restraint keywords)
+
+\textcolor{red}{Free energy of binding in complex, with correction for Boresch-style orientational restraints~\cite{Boresch2024} Note that this is an end-point correction because $\Delta$G is a state function, we only need the correction at the final state, so all k values are their full B-state ($\lambda = 1$) values.}
+
+\begin{equation}
+\Delta G_{restraint} = -k_B T ln\left[ \frac{2 \pi V^{\circ}}{r^2_0 sin\theta_A sin\theta_B} \left(\frac {k_r k_{\theta_A} k_{\theta_B} k_{\phi_A} k_{\phi_B}}{(2 \pi k_B T)^5}\right)^{1/2}\right]
+\label{eq_boresch_correction}
+\end{equation}
+
+\begin{lstlisting}
+--- 5-Restraint Correction Results ---
+Temperature  : 298.15 K
+DG Correction: -30.5631 kJ/mol
+DG Correction: -7.3048 kcal/mol
+\end{lstlisting}
+
 \subsubsection{Run Solution Free Energy Calculations} \label{dgbind_run_solv}
 
+\textcolor{red}{Same as Tutorial 5, now just for ZFUR, note that vsites are irrelevant since they are non-interacting}
+
+\begin{equation}
+\Delta G_{bind} = \Delta G_{complex} - \Delta G_{solv} + \Delta G_{restraint}
+\label{eq_dgbind}
+\end{equation}
+
 \subsubsection{Summary and Review of Objectives} \label{dgbind_summary}
+
+\textcolor{red}{Restate objectives here and explain where they were met}
 
 %%%%%%%%% ADVANCED: UMBRELLA SAMPLING %%%%%%%%%
 \subsection{Tutorial 7: Umbrella Sampling} \label{pmf}
 
-\begin{figure}[h]
-\centering
-\includegraphics{umbrella_protofibril_dissociate}
-\caption{The terminal peptide of the A$\beta$\textsubscript{42} protofibril dissociates along the fibril axis, the degree of freedom over which the free energy difference, $\Delta$G, is computed.}
-\label{umbrella_composite_fig}
-\end{figure}
+% Re-write: two methanol in water w/CHARMM, inspired by methanol in vacuo system of Hub et al. JCTC 2010
 
-It is often of interest to compute a free energy change that is associated with some change in geometry, such as a conformational change in a protein or the binding of two molecules as they approach each other along some path. Attempting to study such processes can be challenging with normal, unbiased MD simulations, as high-energy states (transition states or rare conformations) are not frequently sampled. Therefore, it is difficult to define accurate free energy differences, or the barriers may simply never be overcome on the timescale accessible to conventional MD. To overcome this challenge, biasing potentials can be applied to enhance sampling of these rare states and thereby more completely define free energy differences.
+%\begin{figure}[h]
+%\centering
+%\includegraphics{umbrella_protofibril_dissociate}
+%\caption{The terminal peptide of the A$\beta$\textsubscript{42} protofibril dissociates along the fibril axis, the degree of freedom over which the free energy difference, $%\Delta$G, is computed.}
+%\label{umbrella_composite_fig}
+%\end{figure}
 
-In this tutorial (available online at \tutorialpmf), the user will be guided through the process of calculating the free energy difference for the dissociation of a peptide from a pentameric assembly using umbrella sampling to compute the potential of mean force (PMF), or $\Delta$G (Figure~\ref{umbrella_composite_fig}). The process outlined here is based on a published study that examined the impact of point mutations on the stability of A$\beta$\textsubscript{42} protofibrils~\cite{Lemkul2010}. It is important to note here that these simulations are somewhat unique, as they involve extra restraints and only a single dimension along which the PMF is computed. Additional details will be provided in subsequent sections in the tutorial.
+It is often of interest to compute a free energy change that is associated with some change in geometry, such as a conformational change in a protein or the binding of two molecules as they approach each other along some path. Attempting to study such processes can be challenging with normal, unbiased MD simulations, as high-energy states (transition states or rare conformations) are not frequently sampled. Therefore, it is difficult to define accurate free energy differences, or the barriers may simply never be overcome on the timescale accessible to conventional MD. To address this challenge, biasing potentials can be applied to enhance sampling of these rare states and thereby more completely define free energy differences.
 
-Constructing a system that will be subjected to umbrella sampling is much like any other, so the initial details of preparing the topology, defining the box, solvation, minimization, and equilibration will only highlight aspects that are unique to subsequent umbrella sampling simulations. Ultimately, to carry out these calculations, a set of configurations is generated along some path within the system (a distance, dihedral angle, etc.), called a "reaction coordinate," defining the starting points for each of a series of windows that allow sampling in discrete regions of the reaction coordinate. There are many ways to construct initial configurations in each window. In this tutorial, the reaction coordinate is defined as the $z$-axis and will employ a non-equilibrium technique called steered molecular dynamics (SMD) to generate the starting configurations for each window.
+In this tutorial (available online at \tutorialpmf), the user will be guided through the process of calculating the free energy difference for the separation of two methanol molecules in water. Constructing this system is much like any other, so the initial details of preparing the topology, defining the box, solvation, minimization, and equilibration will only highlight aspects that are unique to subsequent umbrella sampling simulations. This technique restrains the system along one degree of freedom and allows the remaining degrees of freedom to evolve in an unbiased way~\cite{Torrie1977}. To carry out these calculations, a set of configurations is generated along some path within the system (a distance, dihedral angle, etc.), called a "reaction coordinate" (denoted $\xi$), defining the starting points for each of a series of windows that allow sampling in discrete regions of the reaction coordinate. There are many ways to construct initial configurations in each window. In this tutorial, the reaction coordinate is defined as the center-of-mass (COM) connecting two methanol molecules and will employ a non-equilibrium technique called steered molecular dynamics (SMD) to generate the starting configurations for each window.
 
-\subsubsection{Prepare the Protein Topology} \label{umbrella_protein_topology}
+The principal output of this series of simulations is a potential of mean force (PMF), also denoted $\omega$. A PMF describes how the free energy of a system changes as a function of progress along the restrained degree of freedom at discrete values while all other degrees of freedom are allowed to evolve freely.
 
-The system being studied here is a pentamer of the A$\beta$ peptide, in an aggregated fibril form. The initial coordinates are taken from an NMR structure determined by L\"uhrs et al.~\cite{Luhrs2005}. Each of the five protein chains is labeled (A, B, C, D, and E) in the PDB file, which is entry 2BEG. The first model (the lowest energy) will be used here, and the N-termini of each chain should be capped with acetyl groups to prevent spurious end effects. There are several residues in each chain that are disordered and therefore not assigned in the NMR structure. Residues 17-42 of each chain are present, so an acetyl cap should be added to Leu17 of each peptide. GROMACS has no ability to construct such terminal capping groups. As in the previous tutorial (Section~\ref{kalp_protein_topology}), these groups should be constructed in AmberTools (\url{http://ambermd.org/}) or CHARMM~\cite{Brooks2009}. A suitable protein PDB file is provided in the online version of the tutorial. With this file, execute \texttt{pdb2gmx}:
+\subsubsection{Prepare the Topology} \label{umbrella_topology}
+
+The system of interest will be constructed from coordinates of two methanol molecules separated by a COM distance of 0.25 nm. This system is inspired by a similar \textit{in vacuo} calculation performed by Hub~\textit{et al.} as a test case for the implementation of the Weighted Histogram Analysis Method (WHAM)~\cite{Kumar1992} in GROMACS~\cite{Hub2010}, and previous calculations of this interaction using quantum mechanical methods~\cite{Ghosh2012}. The initial coordinates for these two methanol molecules, in PDB format, are provided in the online tutorial and in the accompanying tutorial files. 
+
+The force field employed in this tutorial is the CHARMM additive force field, with methanol represented by CGenFF. Download the February 2026 release of the CHARMM36 port for GROMACS with CGenFF 5.0 from the MacKerell lab website, as in previous tutorials. Generate the topology as usual with \texttt{pdb2gmx}:
 
 \begin{lstlisting}
-$ gmx pdb2gmx -f 2BEG_model1_capped.pdb -o complex.gro -ignh -ter
+$ gmx pdb2gmx -f meoh.pdb -o meoh.gro -water tip3p
 \end{lstlisting}
 %
-Choose the GROMOS96 53A6 parameter set as the force field, and when prompted, choose "None" for all N-termini (to indicate the fact that no modifications should be made to acetyl groups) and "COO\textsuperscript{$-$}" for the C-termini (as Ala42 is the true C-terminus of the A$\beta$\textsubscript{42} peptide). The fact that there are multiple protein chains in the coordinates is not a problem for \texttt{pdb2gmx}, as it can produce a topology for each provided that the individual chains are either denoted with different chain identifiers (as is the case here) or delimited by TER cards.
-
-Later, in Section~\ref{umbrella_smd}, a biasing force will be applied to one of the peptides (chain A) in the pentamer. To avoid distortions to the structure, restraints will be applied to chain B to immobilize it during this process. Note that \texttt{pdb2gmx} has produced individual topologies and restraint file topologies (all with extension \texttt{.itp}) for each chain. Add the following to the end of \texttt{topol\_Protein\_chain\_B.itp}:
-
-\begin{lstlisting}
-#ifdef POSRES_B
-#include "posre_Protein_chain_B.itp"
-#endif
-\end{lstlisting}
-
-It is important to note here that the input coordinates used in this tutorial differ from those used in our published study~\cite{Lemkul2010}. In that work, the pentamer was subjected to 100 ns of MD simulation to relax the initial configuration prior to being employed in PMF calculations. For simplicity in this tutorial, the input coordinates are taken directly from the NMR structure. Should the user wish to more faithfully replicate the published results, follow the protocol described in that work and use the final configuration of the system after 100 ns of MD as input into \texttt{pdb2gmx}.
+Choose CHARMM36 as the force field when prompted.
 
 \subsubsection{Define the Unit Cell and Solvate} \label{umbrella_box}
 
-The box size for umbrella sampling simulations, like in any other system, must be set such that the minimum image convention (see Section~\ref{lyso_solv}) is satisfied at all times. There is an additional consideration, however, that requires the length of the biasing potential to also satisfy the minimum image convention. That is, the length of the biasing potential will be calculated from the minimum periodic distance between the restrained species that define the reaction coordinate. In this example, the reaction coordinate will be defined as the COM distance between chains A and B in the A$\beta$\textsubscript{42} protofibril, with a final length of 5.0 nm, sufficient to lead to complete dissociation of the two chains (no interactions within the longest nonbonded cutoff). The biasing potential will only be applied along the $z$-axis, therefore the length of the box along $z$ must be at least 10.0 nm (double the length of the reaction coordinate), with some additional space to satisfy the minimum image convention between the atoms in the system. The box vector along the $z$-axis will thus be set to 12.0 nm.
+The box size for umbrella sampling simulations, like in any other system, must be set such that the minimum image convention (see Section~\ref{lyso_solv}) is satisfied at all times, including at the extreme values $\xi$. That is, the length of the biasing potential will be calculated from the minimum periodic distance between the restrained species that define the reaction coordinate. In this example, the reaction coordinate will be defined as the COM distance between two methanol molecules. Given that the reaction coordinate will reach a maximum value of $\sim$3 nm, a box must be defined that maintains this periodic distance, as well. To reflect the intrinsic spherical symmetry of the restrained methanol molecules, the unit cell should be as compact as possible. The most efficient option is a rhombic dodecahedron.
 
-An orthorhombic box that defines a solute-box distance of 1.0 nm would result in a unit cell with dimensions of 6.560 nm $\times$ 4.362 nm $\times$ 4.955 nm, with the geometric center naturally following as (3.280, 2.181, 2.4775). To position the A$\beta$\textsubscript{42} protofibril in a manner sufficient to satisfy the minimum image convention with respect to the biasing potential in the newly defined box, use \texttt{editconf}:
+A dodecahedral box that enables a maximum COM distance of 3.0 nm requires unit cell vectors of approximately 6.5 nm to satisfy the minimum image convention when the methanol molecules reach that separation. To define the unit cell for this system, use \texttt{editconf} and solvate with water as in any other system. No ions will be added to this system.
 
 \begin{lstlisting}
-$ gmx editconf -f complex.gro -o newbox.gro -center 3.280 2.181 2.4775 -box 6.560 4.362 12
-\end{lstlisting}
-%
-After doing so, the protofibril will be positioned within the unit cell as shown in Figure~\ref{umbrella_box_fig}.
+$ gmx editconf -f meoh.gro -o newbox.gro -bt dodecahedron -box 6.5 6.5 6.5 -center 0 0 0
 
-\begin{figure}[H]
+$ gmx solvate -cp newbox.gro -cs spc216.gro -o solv.gro -p topol.top
+\end{lstlisting}
+
+After doing so, the methanol molecules will be positioned within the unit cell as shown in Figure~\ref{umbrella_box_fig} (after re-wrapping to account for periodicity).
+
+\begin{figure}[h]
 \centering
-\includegraphics{umbrella_protofibril_box}
-\caption{The position of the A$\beta$\textsubscript{42} protofibril in the unit cell.}
+\includegraphics[width=\columnwidth]{umbrella_meoh_box}
+\caption{The initial positioning of two methanol molecules in a sufficiently large unit cell to conduct umbrella sampling out to $\xi$ = 3.0 nm.}
 \label{umbrella_box_fig}
 \end{figure}
 
-It is important to note here that the approach taken thus far is fairly specific to the system being considered. The biasing potential will be applied directly along the $z$-axis, which is the fibril axis for A$\beta$ fibrils. The box size is designed to minimize the number of water molecules added, which is desirable since the box has to be large to accommodate the restraint length. It is possible to use a somewhat tight-fitting box in the $x-y$ plane since additional restraints will be applied to chain B of the protofibril. The restraints prevent the protofibril from rotating over time, therefore the box does not have to have spherical symmetry. In general, for {\em e.g.} protein-protein or protein-ligand binding, this approach would not work. The user would have to construct a cubic, rhombic dodecahedral, or truncated octahedral box and define a reaction coordinate in all three spatial dimensions. Because of the unique nature of the system being studied here, the approach is somewhat simplified in this tutorial. The biasing potential is as simple as possible and the system is relatively small so it will run quickly.
-
-Proceed with solvation and the addition of 100 mM NaCl as in any other system:
-
-\begin{lstlisting}
-$ gmx solvate -cp newbox.gro -cs spc216.gro -o solv.gro -p topol.top
-
-$ gmx grompp -f ions.mdp -c solv.gro -p topol.top -o ions.tpr
-
-$ gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral -conc 0.1
-\end{lstlisting}
-
 \subsubsection{Energy Minimization and Equilibration} \label{umbrella_equil}
 
-Continue preparing the system by performing energy minimization and a short $NPT$ equilibration. Note that it is not strictly necessary to separate equilibration into $NVT$ and $NPT$ phases, as above in the lysozyme tutorial (see Section~\ref{lyso_equil}). The necessary \texttt{.mdp} files are provided in the online tutorial. All of the relevant keywords and settings have been discussed previously and will not be elaborated on here.
+Continue preparing the system by performing energy minimization and a short $NPT$ equilibration. Note that it is not strictly necessary to separate equilibration into $NVT$ and $NPT$ phases, as in Tutorial 1 (Section~\ref{lyso_equil}). The necessary \texttt{.mdp} files are provided in the online tutorial. All of the relevant keywords and settings have been discussed previously and will not be elaborated on here.
 
 \begin{lstlisting}
-$ gmx grompp -f minim.mdp -c solv_ions.gro -p topol.top -o em.tpr
-
+$ gmx grompp -f em.mdp -c solv.gro -p topol.top -o em.tpr
 $ gmx mdrun -deffnm em
-\end{lstlisting}
 
-\begin{lstlisting}
 $ gmx grompp -f npt.mdp -c em.gro -r em.gro -p topol.top -o npt.tpr
-
 $ gmx mdrun -deffnm npt
 \end{lstlisting}
 
 \subsubsection{Generate Configurations} \label{umbrella_smd}
 
-To compute the PMF along a reaction coordinate (typically denoted as $\xi$), a series of simulations is performed. Each of these simulations is independent from the others and is carried out under the influence of a biasing potential that restricts the sampling along some degree of freedom to a region of $\xi$. Commonly $\xi$ is defined as a distance or dihedral angle. In the present example, $\xi$ is defined as the COM distance between chains A and B of the A$\beta$\textsubscript{42} protofibril, and as such, it is necessary to generate a series of configurations at increasing COM distance. There are many approaches to generating configurations, including unbiased simulations from which frames are extracted, manual translation of the target species along a vector that corresponds to $\xi$, or the application of non-equilibrium techniques like SMD to enforce motion along $\xi$, from which frames are extracted. It is this last approach that will be applied in this tutorial. From an SMD trajectory, frames will be extracted corresponding to regular intervals of COM distance, and then individual simulations of these configurations will be performed (Figure~\ref{umbrella_schematic_fig}).
+To compute the PMF along a reaction coordinate, a series of simulations is performed. Each of these simulations is independent from the others and is carried out under the influence of a biasing potential that restricts the sampling along some degree of freedom to a region of $\xi$. Commonly, $\xi$ is defined as a distance or dihedral angle. In the present example, $\xi$ is defined as the COM distance between the two methanol molecules. As such, it is necessary to generate a series of configurations at increasing COM distance. There are many approaches to generating configurations, including unbiased simulations from which frames are extracted, manual translation of the target species along a vector that corresponds to $\xi$, or the application of non-equilibrium techniques like SMD to enforce motion along $\xi$, from which frames are extracted. It is this last approach that will be applied in this tutorial. From an SMD trajectory, frames will be extracted corresponding to regular intervals of COM distance, and then individual simulations of these configurations will be performed (Figure~\ref{umbrella_schematic_fig}).
 
-\begin{figure}[ht!]
+\begin{figure}[h!]
 \centering
 \includegraphics{umbrella_schematic2}
 \caption{The process of umbrella sampling. From an initial ensemble of configurations along a reaction coordinate, several are chosen for independent simulations at intervals along the reaction coordinate. These simulations are subsequently carried out under the influence of a harmonic biasing potential, restricting their motion along the reaction coordinate to generate a restrained ensemble within a sampling window. Distributions of reaction coordinate values within each window are the "umbrellas" from which the name of the technique is derived.}
 \label{umbrella_schematic_fig}
 \end{figure}
 
-To generate a series of configurations that can serve as input into the individual sampling windows, the "pull code" in GROMACS (so named for its ability to apply a biasing potential that "pulls" along a specified vector) will be employed to cause the dissociation of chain A from the remainder of the protofibril. First, create an index group for each of these chains:
+To generate a series of configurations that can serve as input into the individual sampling windows, the "pull code" in GROMACS (so named for its ability to apply a biasing potential that "pulls" along a specified vector) will be employed to separate the two methanol molecules in a controlled manner. First, create an index group for each of these molecules:
 
 \begin{lstlisting}
 $ gmx make_ndx -f npt.gro
-> r 1-27
-> name 19 Chain_A
-> r 28-54
-> name 20 Chain_B
+> r 1
+> name 6 meoh1
+> r 2
+> name 7 meoh2
 > q
 \end{lstlisting}
 
@@ -2160,105 +2177,79 @@ pull                    = yes
 pull_ncoords            = 1
 pull_ngroups            = 2
 pull_coord1_groups      = 1 2
-pull_group1_name        = Chain_A
-pull_group2_name        = Chain_B
+pull_group1_name        = meoh1
+pull_group2_name        = meoh2
 pull_coord1_type        = umbrella
 pull_coord1_geometry    = distance
-pull_coord1_dim         = N N Y
+pull_coord1_dim         = Y Y Y
 pull_coord1_start       = yes
 pull_coord1_rate        = 0.01
 pull_coord1_k           = 1000
 \end{lstlisting}
 
-The \texttt{define = -DPOSRES\_B} line in the \texttt{.mdp} file specifies that peptide chain B is to be restrained during this process. Application of restraints here models the stability of amyloid fibrils, which are orders of magnitude larger and therefore more resilient to dissociation of terminal peptides, and also enables more efficient dissociation of chain A. In the absence of position restraints, the entire pentameric protofibril responds to the imaginary spring, causing it to diffuse through the box, distort, and ultimately not produce the desired result. In general, such position restraints are not necessary, and are rarely employed in the case of, {\em e.g.} protein-ligand or membrane systems. The application of restraints is thus somewhat unique to the system considered here and should not be viewed as generally applicable.
+% over a range of {0.2..3.0} by 0.1-nm spacing = 29 windows (0..28)
 
 The \texttt{pull} keyword tells \texttt{grompp} to read settings related to the pull code. If set to \texttt{no}, all following settings (\texttt{pull\_*}) are ignored. The \texttt{pull\_ncoords} keyword specifies how many reaction coordinates will be present in the simulated system. This number can be set to any value, that is, a multi-dimensional free energy surface can be constructed in any number of dimensions. For this example, there is only one reaction coordinate, which is defined by two groups of atom selections (\texttt{pull\_ncoords = 2}). Next, the groups themselves are specified. Each of the groups is assigned an integer (1 through N, where N is the value of \texttt{pull\_ngroups}), which are subsequently named with the \texttt{pull\_groupN\_name} keyword. Here, two groups are specified by the names assigned above in the index file.
 
-The next settings define the type of biasing potential to be applied. The \texttt{pull\_coord1\_type} specifies a harmonic biasing potential with the keyword \texttt{umbrella}. It is important to note here that, despite the name of this setting, the current process is not umbrella sampling. The \texttt{umbrella} specification is simply a synonym for the harmonic potential that is typically employed during umbrella sampling (see below, Section~\ref{umbrella_us}). The reaction coordinate itself is then specified with the \texttt{pull\_coord1\_geometry} and \texttt{pull\_coord1\_dim} settings. In this case, the \texttt{distance} between chains A and B defines the geometry of the reaction coordinate, and the biasing potential only acts along the $z$-axis (\texttt{pull\_coord1\_dim = N N Y}), which specifies the dimensions (x, y, z) and whether or not the biasing potential acts (N = no, Y = yes). The initial value of the reaction coordinate is set very simply with \texttt{pull\_coord1\_start = yes}, such that \texttt{grompp} sets the initial value to whatever is computed from the input coordinate file. One can override this value with \texttt{pull\_coord1\_init}, which specifies a floating-point number as the initial (or reference) value of the reaction coordinate.
+The next settings define the type of biasing potential to be applied. The \texttt{pull\_coord1\_type} specifies a harmonic biasing potential with the keyword \texttt{umbrella}. It is important to note here that, despite the name of this setting, the current process is not umbrella sampling. The \texttt{umbrella} specification is simply a synonym for the harmonic potential that is typically employed during umbrella sampling (see below, Section~\ref{umbrella_us}). The reaction coordinate itself is then specified with the \texttt{pull\_coord1\_geometry} and \texttt{pull\_coord1\_dim} settings. In this case, the \texttt{distance} between the two methanol molecules is the geometry of the reaction coordinate, and the biasing potential acts along all Cartesian axes (\texttt{pull\_coord1\_dim = Y Y Y}), which specifies the dimensions (x, y, z) and whether or not the biasing potential acts (N = no, Y = yes). The initial value of the reaction coordinate is set very simply with \texttt{pull\_coord1\_start = yes}, such that \texttt{grompp} sets the initial value to whatever is computed from the input coordinate file. One can override this value with \texttt{pull\_coord1\_init}, which specifies a floating-point number as the initial (or reference) value of the reaction coordinate.
 
 Finally, the harmonic biasing potential parameters are set. The \texttt{pull\_coord1\_rate} setting specifies the rate at which the imaginary spring connecting the two restrained groups is extended, in nm ps\textsuperscript{-1}. The stiffness of the spring is set with \texttt{pull\_coord1\_k}, according to Hooke's Law. It is important to note that the rate of extension of the spring is not necessarily equivalent to the rate of observed displacement of the pulled groups. The imaginary spring counteracts the attractive forces in the system, and builds up until these restoring forces are overcome. This concept will be explored below in the analysis of the SMD simulation.
 
-Use the \texttt{md\_pull.mdp} input file to prepare the input for the SMD simulation, and carry it out with \texttt{mdrun}:
+Use the \texttt{md\_pull.mdp} input file to prepare the input for the SMD simulation, and carry it out with \texttt{mdrun}. The simulation is set to run for 270 ps, which should be sufficient to achieve $\sim$3 nm COM separation, starting from the initial 0.25-nm COM distance.
 
 \begin{lstlisting}
-$ gmx grompp -f md_pull.mdp -c npt.gro -p topol.top -r npt.gro -n index.ndx -t npt.cpt -o pull.tpr
-
+$ gmx grompp -f md_pull.mdp -c npt.gro -p topol.top -n index.ndx -t npt.cpt -o pull.tpr
 $ gmx mdrun -deffnm pull
 \end{lstlisting}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics{umbrella_smd_pullf}
-\caption{The force on the harmonic spring during SMD separation of chains A and B.}
+\caption{The force on the harmonic spring during SMD separation of the two methanol molecules. The solid line indicates a 50-ps running average of the data points (gray).}
 \label{umbrella_smd_pullf_fig}
 \end{figure}
 
-After the SMD simulation is finished, plot the contents of \texttt{pullf.xvg} (Figure~\ref{umbrella_smd_pullf_fig}). This file contains the force on the imaginary spring as a function of time. Visualize the trajectory and note that chain A does not dissociate from chain B for some time. Only after the force builds up on the spring does this dissociation begin. The A$\beta$\textsubscript{42} protofibril is stabilized by extensive inter-peptide side-chain packing and backbone hydrogen bonding. Thus, a large force is required to disrupt all of these interactions, which are described in detail elsewhere~\cite{Lemkul2010}.
-
-The \texttt{pullx.xvg} file contains the length of the reaction coordinate as a function of time. It may be useful to plot the restraint forces as a function of displacement rather than as a function of time. To extract this information, use standard Linux commands \texttt{grep} and \texttt{awk}:
-
-\begin{lstlisting}
-$ grep -v [@#] pullf.xvg | awk '{print $2}' > forces
-$ grep -v [@#] pullx.xvg | awk '{print $2}' > x
-$ paste x forces > pull_force_vs_displacement.xvg
-$ rm x forces
-\end{lstlisting}
-
-These data are plotted in Figure~\ref{umbrella_pullf_vs_pullx_fig}.
+After the SMD simulation is finished, plot the contents of \texttt{pull\_pullf.xvg} (Figure~\ref{umbrella_smd_pullf_fig}). This file contains the force on the virtual spring as a function of time. Note that the force on the spring is fairly low during the entire SMD simulation, meaning it's relatively easy to separate the molecules. Forces will evolve differently in different systems. The \texttt{pull\_pullx.xvg} file contains the length of the reaction coordinate as a function of time. Note that the distance steadily increases here, again reflecting that it is fairly easy to separate the two methanol molecules.
 
 \begin{figure}[h!]
 \centering
-\includegraphics{umbrella_pullf_vs_pullx}
-\caption{The force on the harmonic spring as a function of displacement during SMD.}
-\label{umbrella_pullf_vs_pullx_fig}
+\includegraphics{umbrella_smd_pullx}
+\caption{The COM distance between the two methanol molecules during SMD. The solid line indicates a 50-ps running average of the data points (gray).}
+\label{umbrella_smd_pullx_fig}
 \end{figure}
 
-Next, configurations must be extracted from the trajectory to define the starting points for each of the umbrella sampling windows. There are several ways to approach this problem, and here the approach will be to:
+After completing the SMD simulation, configurations must be extracted from the trajectory to define the starting points for each of the umbrella sampling windows. There are several ways to approach this problem, and here the approach will be to:
 
 \begin{enumerate}
-	\item Write configurations of each snapshot
-	\item Compute the COM distance between chains A and B in each snapshot
-	\item Compile these COM distances as a function of snapshot index
-	\item Use selected frames as input into umbrella sampling
+	\item Compute the COM distance between methanol molecules in each snapshot
+	\item Specify the desired values of $\xi$ and window intervals as input into umbrella sampling
+	\item Extract the frame with the closest COM distance for each desired value of $\xi$
 \end{enumerate}
 
-The GROMACS \texttt{trjconv} program has an option to write each frame in a trajectory to a separate file, \texttt{-sep}. Save these separate snapshots with:
+Compute the time series of the COM distances with the \texttt{distance} module. Note the use of single quotes (') to enclose the entire selection string and double quotes (") to enclose group names referenced from \texttt{index.ndx}.
 
 \begin{lstlisting}
-$ gmx trjconv -s pull.tpr -f pull.xtc -o conf.gro -sep
+$ gmx distance -s pull.tpr -f pull.xtc -select 'com of group "meoh1" plus com of group "meoh2"' -n index.ndx -oall dist.xvg
+$ python3 find_windows.py
 \end{lstlisting}
-%
-Each snapshot will be written to a file called \texttt{confN.gro}, where N is the index of the frame. The COM distance between chains A and B in each of these frames is computed with the GROMACS \texttt{distance} program, {\em e.g.} for the frame at t = 0 ps:
 
-\begin{lstlisting}
-$ gmx distance -s pull.tpr -f conf0.gro -select 'com of group "Chain_A" plus com of group "Chain_B"' -n index.ndx -oall dist0.xvg
-\end{lstlisting}
-%
-Note the use of single quotes (') to enclose the entire selection string and double quotes (") to enclose group names referenced from \texttt{index.ndx}.
-
-The online version of this tutorial provides a Bash script (\texttt{get\_distances.sh}) that automates this entire process and compiles the COM distances into a single text file. This file should be inspected for snapshots at intervals of approximately 0.2 nm (perfectly even spacing is unlikely) and the frame indices should be recorded and corresponding coordinate files saved.
-
-It is worth noting that the COM distance as a function of time can be directly calculated from the trajectory file (\texttt{pull.xtc}) for later inspection. After this analysis, the user would have to decide which frames to extract from the trajectory and invoke \texttt{trjconv} for each of these frames. As such, the approach taken in this tutorial, while somewhat redundant, may actually be viewed as more efficient. The user can move or copy the desired frames to a new location and simply delete the unnecessary snapshots, ultimately saving time.
-
-While the reaction coordinate in this system is straightforward and justified based on a number of experiments and other mathematical models, the general application of SMD to generate configurations may yield non-equilibrium states that are sensitive to the chosen path. When using this approach in other systems, users should be forewarned that they should generate multiple pulling vectors to generate a sufficient ensemble of potential starting states, and to equilibrate thoroughly to reasonably ensure that the path sampled is the minimum free-energy path.
+The \texttt{find\_windows.py} script attempts to find COM distances in the range of 0.2 $-$ 3.0 nm, with an interval of 0.1 nm. It subsequently calls the GROMACS \texttt{trjconv} module to write out a coordinate file at the time corresponding to the closest COM distance to the desired value. In this example, 28 configurations will be produced, the first named \texttt{window0.gro} and the last \texttt{window27.gro}.
 
 \subsubsection{Umbrella Sampling} \label{umbrella_us}
 
 Once suitable snapshots have been identified, each umbrella sampling window will be prepared. Each window is equilibrated under an $NPT$ ensemble for 100 ps before data collection is carried out over 10 ns. The COM pull settings are the same as what are shown above for the SMD simulation, with the exception of \texttt{pull\_coord1\_rate}, which is now set to zero. During these simulations, the COM distance between chains A and B is to be restrained; no net displacement is to be imposed, which is what a non-zero value of \texttt{pull\_coord1\_rate} specifies.
 
-Prepare the input \texttt{.tpr} files for each $NPT$ equilibration and carry out those simulations (assuming that snapshot 6 corresponds to a value of $\xi$ = 0.5 nm):
+Prepare the input \texttt{.tpr} files for each $NPT$ equilibration and carry out those simulations. The example shown is for the first window, but needs to be repeated for all 28 windows, which is easily accomplished with a for-loop in a shell script.
 
 \begin{lstlisting}
-$ gmx grompp -f npt_umbrella.mdp -c conf6.gro -r conf6.gro -p topol.top -n index.ndx -o npt0.tpr
-
+$ gmx grompp -f npt_umbrella.mdp -c window0.gro -r window0.gro -p topol.top -n index.ndx -o npt0.tpr
 $ gmx mdrun -deffnm npt0
 \end{lstlisting}
 
-After equilibration, production umbrella sampling MD simulations are performed:
+After equilibration, production umbrella sampling MD simulations are performed. The template \texttt{md\_umbrella.mdp} file provided in the online tutorial and in the accompanying tutorial files modifies the \texttt{md\_pull.mdp} pull settings slightly. In this case, \texttt{pull\_coord1\_start} is set to "no" and the target COM separation distance is specified directly using the \texttt{pull\_coord1\_init} keyword. The \texttt{write\_mdp.pl} Perl script takes the template file and produces a series of suitable \texttt{.mdp} files, which again can be carried out in a for-loop:
 
 \begin{lstlisting}
-$ gmx grompp -f md_umbrella.mdp -c npt0.gro -t npt0.cpt -p topol.top -r npt0.gro -n index.ndx -o umbrella0.tpr
-
+$ gmx grompp -f md_umbrella_0.mdp -c npt0.gro -t npt0.cpt -p topol.top -r npt0.gro -n index.ndx -o umbrella0.tpr
 $ gmx mdrun -deffnm umbrella0
 \end{lstlisting}
 
@@ -2272,7 +2263,7 @@ The input to the GROMACS \texttt{wham} program comprises two text files, which l
 umbrella0.tpr
 umbrella1.tpr
 ...
-umbrella22.tpr
+umbrella27.tpr
 \end{lstlisting}
 
 Then, create a file called \texttt{pullf-files.dat} that contains:
@@ -2281,62 +2272,57 @@ Then, create a file called \texttt{pullf-files.dat} that contains:
 umbrella0_pullf.xvg
 umbrella1_pullf.xvg
 ...
-umbrella22_pullf.xvg
+umbrella27_pullf.xvg
 \end{lstlisting}
 
 The ellipses in both of the above blocks of text indicate that the intervening file names should similarly be specified. Next, invoke \texttt{wham} to compute the PMF:
 
 \begin{lstlisting}
-$ gmx wham -it tpr-files.dat -if pullf-files.dat -o -hist -unit kCal
+$ gmx wham -it tpr-files.dat -if pullf-files.dat -o -hist
 \end{lstlisting}
 
-The above command computes a PMF in the units of kcal mol\textsuperscript{$-$1} and writes it to a file called \texttt{profile.xvg}. The corresponding umbrella histograms, $h(\xi)$, are also produced (\texttt{histo.xvg}). These results are plotted in Figure~\ref{umbrella_composite_pmf_histo_fig}.
+The above command computes a PMF in the units of kJ mol\textsuperscript{-1} and writes it to a file called \texttt{profile.xvg}. The corresponding umbrella histograms, $h(\xi)$, are also produced (\texttt{histo.xvg}). The PMF that results is not actually the final answer, however. Given that we are applying restraints to a system with spherical symmetry, we must correct for the restriction in spherical volume accessible to the methanol molecules. Therefore, we must apply a volume entropy correction equal to $2 k_B T ln(4)$, where $r$ is the restraint length:
 
-\begin{figure}[h!]
-\centering
-\includegraphics{umbrella_composite_pmf_histo}
-\caption{The PMF computed by the WHAM algorithm and the corresponding umbrella histograms.}
-\label{umbrella_composite_pmf_histo_fig}
-\end{figure}
+\begin{equation}
+\omega = \omega_{WHAM} + 2 k_B T ln(r)
+\label{eq_pmf_correction}
+\end{equation}
 
-Note that \texttt{histo.xvg} is contains multiple data series and should be plotted in XmGrace as such:
+The online tutorial and accompanying tutorial files provide a Python script called \texttt{correct\_pmf.py} handles this volume entropy correction by reading in the \texttt{profile.xvg} file produced by the \texttt{wham} program. It is also worth mentioning how WHAM computes the actual PMF values along $\xi$. By convention, the leftmost window ({\em i.e.} lowest value of $\xi$) is assigned a free energy value of zero. The energies in subsequent windows are all defined relative to this value. It may be more useful to shift some physically relevant or otherwise convenient point to zero. Such a practice does not change the result at all, it is a systematic translation of the PMF curve and the final value of $\Delta$G is the same. The GROMACS \texttt{wham} program has the ability to shift the final PMF curve to place the zero point at a user-defined location, but in this case, the offset is also handled by the \texttt{correct\_pmf.py} script, by subtracting the value printed to the terminal.
+
+\begin{lstlisting}
+$ python correct_pmf.py
+...
+Shifted bulk baseline energy by subtracting: -21.1317 kJ/mol
+\end{lstlisting}
+
+Next, one should assess the quality of the sampling obtained during the umbrella simulations. This information is plotted in the \texttt{histo.xvg} file, which contains histograms of the $\xi$ values sampled in each of the windows. Note that \texttt{histo.xvg} is contains multiple data series and should be plotted in XmGrace as such:
 
 \begin{lstlisting}
 $ xmgrace -nxy histo.xvg
 \end{lstlisting}
 
-The PMF has an energy minimum at approximately 0.5 nm, which is the distance corresponding to inter-C$\alpha$ spacing in canonical $\beta$-sheets. The position of this minimum makes sense. The resulting $\Delta$G for dissociation is approximately 46 kcal mol\textsuperscript{$-$1}, which is close to our published value of 50.5 kcal mol\textsuperscript{$-$1}~\cite{Lemkul2010}. The difference can be attributed to the use of a different starting structure (as noted above) and different sampling window intervals. Note, however, the large defect in the PMF around 0.8 nm and the corresponding lack of sampling in the umbrella histograms in this region of the reaction coordinate (Figure~\ref{umbrella_composite_pmf_histo_fig}). This outcome indicates that this region of the reaction coordinate has not been adequately sampled and at least one more simulation must be performed. At $\xi$ = 0.8 nm, the pulling force in SMD was at its maximum (Figure~\ref{umbrella_pullf_vs_pullx_fig}), indicating that the interactions in at this $\xi$ value are very strong and this state may reflect a very high-energy intermediate that is rarely visited. In the umbrella sampling windows employed here, only $\xi$ = 0.7 nm and $\xi$ = 0.9 nm were chosen, and neither sampled around 0.8 nm. To refine this region of the PMF profile, a new simulation should be carried out at $\xi$ = 0.8 nm. The fact that umbrella sampling simulations are independent makes doing so reasonable. The existing simulations do not need to be re-run, as neighboring windows do not depend on one another, unlike other alchemical free energy methods (see Section~\ref{vdw}) or enhanced sampling techniques like replica exchange.
-
-It is also worth mentioning how WHAM computes the actual PMF values along $\xi$. By convention, the leftmost window ({\em i.e.} lowest value of $\xi$) is assigned a free energy value of zero. The energies in subsequent windows are all defined relative to this value. It may be more useful to shift some physically relevant or otherwise convenient point to zero. Such a practice does not change the result at all, it is a systematic translation of the PMF curve and the final value of $\Delta$G is the same. The GROMACS \texttt{wham} program has the ability to shift the final PMF curve to place the zero point at a user-defined location. For example, the place the zero point at the energy minimum ($\xi$ = 0.5 nm), invoke \texttt{wham} as follows:
-
-\begin{lstlisting}
-$ gmx wham -it tpr-files.dat -if pullf-files.dat -o profile_shift.xvg -hist -unit kCal -zprof0 0.5
-\end{lstlisting}
-%
-The result of this new calculation is shown in Figure~\ref{umbrella_pmf_shift_fig}.
+The final PMF and the corresponding histograms are shown in Figure~\ref{umbrella_composite_pmf_histo_fig}. The PMF features two minima, the global minimum around $\xi = 0.44$ nm and another local minimum around $\xi = 0.75$ nm), separated by a barrier around $\xi = 0.6$ nm. The study by Ghosh \textit{et al.} identified contact pairs at C$-$C distances ($r_{CC}$) of 0.37 and 0.44 nm and a solvent-separated pair at $r_{CC}$ of 0.7 nm, with a barrier around $r_{CC} = 0.54$ nm~\cite{Ghosh2012}. In light of the difference between reaction coordinates (COM distance here vs. $r_{CC}$ in the previous study) and the use of an empirical force field vs. a fully quantum mechanical model, the agreement is quite good.
 
 \begin{figure}[h!]
 \centering
-\includegraphics{umbrella_pmf_shift}
-\caption{The PMF computed by the WHAM algorithm, with the zero point set to $\xi$ = 0.5 nm, the energy minimum of the profile.}
-\label{umbrella_pmf_shift_fig}
+\includegraphics[width=\columnwidth]{umbrella_composite_pmf_histo}
+\caption{The PMF computed by the WHAM algorithm and the corresponding umbrella histograms.}
+\label{umbrella_composite_pmf_histo_fig}
 \end{figure}
 
 \subsubsection{Summary and Review of Objectives} \label{umbrella_summary}
 
-In this tutorial, the user has been guided through the process of performing an SMD simulation of one A$\beta$\textsubscript{42} peptide from a pentameric protofibril. From the SMD trajectory, defining a one-dimensional reaction coordinate, snapshots were extracted at roughly regular intervals. These snapshots were subjected to additional equilibration and extended simulations to compute a PMF profile, which yields $\Delta$G for dissociation of the peptide. To review, the objectives for this tutorial were:
+In this tutorial, the user has been guided through the process of performing an SMD simulation to separate two methanol molecules in a box of water. From the SMD trajectory, defining a three-dimensional reaction coordinate, snapshots were extracted at roughly regular intervals. These snapshots were subjected to additional equilibration and extended simulations to compute a PMF profile, which (after correction) yields an estimate of $\Delta$G for dissociation of these two molecules. To review, the objectives for this tutorial were:
 
 \begin{enumerate}
 	\item Apply \texttt{.mdp} keywords that invoke the pull code to add a simple, one-dimensional biasing potential to selected atoms in a system
 	\item Define what is meant by a "reaction coordinate" and how to construct a suitable one
 	\item Perform restrained simulations in multiple sampling windows along a reaction coordinate
-	\item Compute a potential of mean force profile
+	\item Compute a potential of mean force profile, including appropriate corrections for volume entropy effects
 \end{enumerate}
 
 In Section~\ref{umbrella_smd}, the GROMACS pull code keywords were introduced and the definition of the reaction coordinate was explained in the context of these settings. In subsequent sections, umbrella sampling calculations were performed and the WHAM algorithm~\cite{Kumar1992} was used to de-bias the histograms to compute the PMF.
-
-To conclude, it is again important to emphasize that the system simulated here involves special considerations, including the use of position restraints and the fact that the reaction coordinate was one-dimensional. Restraints served two specific purposes: first, to allow efficient dissociation of two strongly interacting species and second, to mimic the stability of A$\beta$ fibrils that are orders of magnitude larger (heavier) than the relatively small pentamer considered here. Such restraints are not typically necessary in different systems, such as protein-ligand complexes or those involving membranes. Additionally, the growth of A$\beta$ fibrils is unidirectional, meaning that orthogonal dimensions (here, $x$ and $y$) are not relevant to the fibril association/dissociation equilibrium. Hence, the reaction coordinate can conveniently be defined along only the $z$-axis, which also allows for the user of a relatively small box, extended only along the $z$-axis beyond what is necessary to satisfy the particle-particle minimum image convention. If the system being considered is a protein-ligand complex, no such assumption can be made, the biasing force should be applied along a vector in all three spatial dimensions, and the box should be sufficiently large in all dimensions. Other, special cases may similarly be unidirectional, but this case should not be considered a default assumption. The user must always consider the intrinsic geometry or symmetry of the system being studied. As such, the \texttt{.mdp} files provided with this tutorial should be adapted for use in any other system, not used directly.
-
 
 
 %%%%%%%%% ADVANCED: BIPHASIC %%%%%%%%%
